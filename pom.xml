@@ -27,6 +27,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,7 +81,7 @@
 	</dependencies>
 
 	<build>
-	<finalName>tamimhmizi_5artic5_g3_stationski</finalName>
+		<finalName>tamimhmizi_5artic5_g3_stationski</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
