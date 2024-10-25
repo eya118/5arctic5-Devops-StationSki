@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   springbootapp:
-    image: springbootapp:latest
+    image: springbootapp
     build:
       context: .
       dockerfile: Dockerfile

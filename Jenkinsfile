@@ -54,14 +54,14 @@ pipeline {
                 sh "docker build -t tamimhmizi/tamimhmizi_g3_stationski . "
             }
         }
-        // stage("Pushing to DockerHub") {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-        //             sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-        //             sh "docker push tamimhmizi/tamimhmizi_g3_stationski"
-        //         }
-        //     }
-        // }
+        stage("Pushing to DockerHub") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    sh "docker push tamimhmizi/tamimhmizi_g3_stationski"
+                }
+            }
+        }
         stage("Stoping containers"){
             steps{
                 sh "docker-compose down"
