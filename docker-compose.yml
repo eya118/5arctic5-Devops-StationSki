@@ -10,8 +10,6 @@ services:
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql
-    networks:
-      - mynetwork
 
   backend:
     image: molkak/station-ski:1.0.0
@@ -20,8 +18,6 @@ services:
       - "8089:8089"
     depends_on:
       - mysqldb
-    networks:
-      - mynetwork
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/stationSki?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
@@ -30,8 +26,5 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     stdin_open: true
     tty: true
-networks:
-  mynetwork:
-    driver: bridge
 volumes:
  db :
