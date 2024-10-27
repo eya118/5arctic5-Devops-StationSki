@@ -1,0 +1,106 @@
+package tn.esprit.spring.services;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import tn.esprit.spring.entities.Subscription;
+import tn.esprit.spring.entities.TypeSubscription;
+import tn.esprit.spring.repositories.ISkierRepository;
+import tn.esprit.spring.repositories.ISubscriptionRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class SubscriptionServicesImplTest {
+
+    @Mock
+    private ISubscriptionRepository subscriptionRepository;
+
+    @Mock
+    private ISkierRepository skierRepository;
+
+    @InjectMocks
+    private SubscriptionServicesImpl subscriptionServices;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testAddSubscription() {
+        Subscription subscription = new Subscription();
+        subscription.setStartDate(LocalDate.now());
+        subscription.setTypeSub(TypeSubscription.ANNUAL);
+
+        when(subscriptionRepository.save(subscription)).thenReturn(subscription);
+
+        Subscription result = subscriptionServices.addSubscription(subscription);
+
+        assertNotNull(result);
+        assertEquals(LocalDate.now().plusYears(1), result.getEndDate());
+        verify(subscriptionRepository, times(1)).save(subscription);
+    }
+
+    @Test
+    void testUpdateSubscription() {
+        Subscription subscription = new Subscription();
+        subscription.setNumSub(1L);
+
+        when(subscriptionRepository.save(subscription)).thenReturn(subscription);
+
+        Subscription result = subscriptionServices.updateSubscription(subscription);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getNumSub());
+        verify(subscriptionRepository, times(1)).save(subscription);
+    }
+
+    @Test
+    void testRetrieveSubscriptionById() {
+        Subscription subscription = new Subscription();
+        subscription.setNumSub(1L);
+
+        when(subscriptionRepository.findById(1L)).thenReturn(Optional.of(subscription));
+
+        Subscription result = subscriptionServices.retrieveSubscriptionById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getNumSub());
+        verify(subscriptionRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetSubscriptionByType() {
+        Set<Subscription> subscriptions = Set.of(new Subscription());
+
+        when(subscriptionRepository.findByTypeSubOrderByStartDateAsc(TypeSubscription.MONTHLY)).thenReturn(subscriptions);
+
+        Set<Subscription> result = subscriptionServices.getSubscriptionByType(TypeSubscription.MONTHLY);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        verify(subscriptionRepository, times(1)).findByTypeSubOrderByStartDateAsc(TypeSubscription.MONTHLY);
+    }
+
+    @Test
+    void testRetrieveSubscriptionsByDates() {
+        List<Subscription> subscriptions = List.of(new Subscription());
+
+        when(subscriptionRepository.getSubscriptionsByStartDateBetween(LocalDate.now().minusDays(1), LocalDate.now()))
+                .thenReturn(subscriptions);
+
+        List<Subscription> result = subscriptionServices.retrieveSubscriptionsByDates(LocalDate.now().minusDays(1), LocalDate.now());
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        verify(subscriptionRepository, times(1)).getSubscriptionsByStartDateBetween(LocalDate.now().minusDays(1), LocalDate.now());
+    }
+}
