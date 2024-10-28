@@ -2,44 +2,44 @@ pipeline {
     agent any
 
     stages {
-        stage('code clone') {
+        stage("code clone") {
             steps {
-                git branch: 'WaelBouaouina_5arctic5-G3',
-                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki',
+                git branch: "WaelBouaouina_5arctic5-G3",
+                    url: "https://github.com/Molka-Kbaier/5arctic5-G3-StationSki"
                     
             }
         }
 
-        stage('Maven Compilation') {
+        stage("Maven Compilation") {
             steps {
-                sh 'mvn clean install'
+                sh "mvn clean install"
             }
         }
 
-        stage('Unit Tests') {
+        stage("Unit Tests") {
             steps {
-                sh 'mvn clean test'
+                sh "mvn clean test"
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/*.xml' // Rapporte les résultats des tests
+                    junit "**/target/surefire-reports/*.xml" // Rapporte les résultats des tests
                 }
             }
         }
 
-        stage('Packaging') {
+        stage("Packaging") {
             steps {
-                sh 'mvn clean package'
+                sh "mvn clean package"
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline terminé avec succès !'
+            echo "Pipeline terminé avec succès !"
         }
         failure {
-            echo 'Le pipeline a échoué.'
+            echo "Le pipeline a échoué."
         }
     }
 }
