@@ -5,7 +5,8 @@ pipeline {
         stage('code clone') {
             steps {
                 git branch: 'WaelBouaouina_5arctic5-G3',
-                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki'
+                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki',
+                    credentialsId:"github"
             }
         }
 
@@ -17,7 +18,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn test'
+                sh 'mvn clean test'
             }
             post {
                 always {
@@ -28,7 +29,7 @@ pipeline {
 
         stage('Packaging') {
             steps {
-                sh 'mvn package'
+                sh 'mvn clean package'
             }
         }
     }
