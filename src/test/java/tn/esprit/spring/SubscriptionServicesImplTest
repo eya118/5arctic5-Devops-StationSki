@@ -78,6 +78,16 @@ class SubscriptionServicesImplTest {
     }
 
     @Test
+    void testRetrieveSubscriptionById_NotFound() {
+        when(subscriptionRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Subscription result = subscriptionServices.retrieveSubscriptionById(1L);
+
+        assertNull(result);
+        verify(subscriptionRepository, times(1)).findById(1L);
+    }
+
+    @Test
     void testGetSubscriptionByType() {
         Set<Subscription> subscriptions = Set.of(new Subscription());
 
