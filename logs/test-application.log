@@ -1,0 +1,5 @@
+2024-10-28 19:54:56 INFO  SkierServicesImplTest:91 - Starting testAssignSkierToSubscription
+2024-10-28 19:54:56 INFO  SkierServicesImplTest:109 - testAssignSkierToSubscription completed successfully
+2024-10-28 19:55:19 INFO  SkierServicesImplTest:190 - Starting addSkiertest
+2024-10-28 19:55:41 INFO  SkierServicesImplTest:166 - Starting testRetrieveSkiersBySubscriptionType
+2024-10-28 19:55:41 INFO  SkierServicesImplTest:178 -  testRetrieveSkiersBySubscriptionType completed successfully
