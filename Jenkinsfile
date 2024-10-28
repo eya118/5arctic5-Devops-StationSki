@@ -6,7 +6,7 @@ pipeline {
             steps {
                 git branch: 'WaelBouaouina_5arctic5-G3',
                     url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki',
-                    credentialsId:"github"
+                    
             }
         }
 
