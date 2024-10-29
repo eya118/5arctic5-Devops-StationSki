@@ -19,7 +19,7 @@ pipeline {
             steps {
                 // Analyse SonarQube, suppose que le plugin SonarQube est bien configuré
                 withSonarQubeEnv('SonarQube') {
-                    sh "mvn clean verify sonar:sonar -Dsonar.verbose=true"
+                    sh "mvn sonar:sonar"
                 }
             }
         }
