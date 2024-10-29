@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage("code clone") {
+        stage("Cloning") {
             steps {
                 git branch: "WaelBouaouina_5arctic5-G3",
                     url: "https://github.com/Molka-Kbaier/5arctic5-G3-StationSki"
@@ -10,21 +10,17 @@ pipeline {
             }
         }
 
-        stage("Maven Compilation") {
+        stage("Compiling") {
             steps {
                 sh "mvn clean install"
             }
         }
 
-        stage("Unit Tests") {
+        stage("Testing") {
             steps {
                 sh "mvn clean test"
             }
-            post {
-                always {
-                    junit "**/target/surefire-reports/*.xml" // Rapporte les résultats des tests
-                }
-            }
+            
         }
 
         stage("Packaging") {
