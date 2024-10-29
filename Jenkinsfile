@@ -15,12 +15,12 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage("SonarQube Analysis") {
             steps {
                 script {
-                    def mvn = tool 'Default Maven'
+                    def mvn = tool "M2_HOME"
                     withSonarQubeEnv() {
-                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
+                        sh "${mvn}/usr/share/maven clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
                     }
                 }
             }
