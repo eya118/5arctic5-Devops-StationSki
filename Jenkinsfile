@@ -11,6 +11,7 @@ pipeline {
 
         stage("Compiling") {
             steps {
+                // Compilation du projet Maven
                 sh "mvn clean compile"
             }
         }
@@ -18,9 +19,12 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
+                    // Définir l'installation Maven
                     def mvn = tool "M2_HOME"
-                    withSonarQubeEnv("SonarQube Token") {
-                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
+                    // Configuration de l'environnement SonarQube
+                    withSonarQubeEnv("SONARQUBE_SERVER") {  // Assurez-vous que "SONARQUBE_SERVER" correspond à l'ID de votre configuration SonarQube dans Jenkins
+                        // Exécution de la commande Maven avec le jeton d'authentification
+                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski' -Dsonar.login=sqp_cc9cc391fa75d8fc9444640031a87972caf8a4c0"
                     }
                 }
             }
@@ -28,23 +32,27 @@ pipeline {
 
         stage("Testing") {
             steps {
+                // Exécution des tests
                 sh "mvn test"
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/*.xml'  // Archive des résultats de tests
+                    // Archive des résultats de tests
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage("Packaging") {
             steps {
+                // Packaging du projet
                 sh "mvn package"
             }
         }
 
         stage("Deploy to Nexus") {
             steps {
+                // Déploiement vers Nexus en sautant les tests
                 sh "mvn clean deploy -DskipTests"
             }
         }
@@ -52,9 +60,11 @@ pipeline {
 
     post {
         success {
+            // Message de réussite du pipeline
             echo "Pipeline terminé avec succès !"
         }
         failure {
+            // Message d'échec du pipeline
             echo "Le pipeline a échoué."
         }
     }
