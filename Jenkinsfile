@@ -16,14 +16,15 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            def mvn = tool 'Default Maven';
-            withSonarQubeEnv() {
-                sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
+            steps {
+                script {
+                    def mvn = tool 'Default Maven'
+                    withSonarQubeEnv() {
+                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
+                    }
                 }
             }
-   
-    }
-  }    
+        }
 
         stage("Testing") {
             steps {
@@ -45,9 +46,9 @@ pipeline {
         stage("Deploy to Nexus") {
             steps {
                 sh "mvn clean deploy -DskipTests"
-                }
             }
-    
+        }
+    }
 
     post {
         success {
@@ -57,4 +58,4 @@ pipeline {
             echo "Le pipeline a échoué."
         }
     }
-
+}
