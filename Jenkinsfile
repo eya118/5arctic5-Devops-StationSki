@@ -28,15 +28,18 @@ pipeline {
             steps {
                 sh "mvn test"
             }
-        }
-
-        stage("JUnit Report") {
-            steps {
-                // Archive les résultats des tests sous forme de rapport JUnit
-                junit '**/target/surefire-reports/*.xml'
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'  // Archive des résultats de tests
+                }
             }
         }
 
+        stage("Packaging") {
+            steps {
+                sh "mvn package"
+            }
+        }
 
         stage("Deploy to Nexus") {
             steps {
