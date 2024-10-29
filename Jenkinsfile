@@ -15,14 +15,15 @@ pipeline {
             }
         }
 
-        stage("SonarQube") {
-            steps {
-                // Analyse SonarQube, suppose que le plugin SonarQube est bien configuré
-                withSonarQubeEnv('SonarQube') {
-                    sh "mvn sonar:sonar"
+        stage('SonarQube Analysis') {
+            def mvn = tool 'Default Maven';
+            withSonarQubeEnv() {
+                sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
                 }
             }
-        }
+   
+    }
+  }    
 
         stage("Testing") {
             steps {
