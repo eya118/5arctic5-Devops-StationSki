@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     def mvn = tool "M2_HOME"
-                    withSonarQubeEnv("SONARQUBE_SERVER") {
+                    withSonarQubeEnv("SonarQube Token") {
                         sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski'"
                     }
                 }
