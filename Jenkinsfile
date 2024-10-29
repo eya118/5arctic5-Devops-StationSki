@@ -35,25 +35,19 @@ pipeline {
                 // Exécution des tests
                 sh "mvn test"
             }
-            post {
-                always {
-                    // Archive des résultats de tests
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
         }
 
         stage("Packaging") {
             steps {
                 // Packaging du projet
-                sh "mvn package"
+                sh "mvn package -DskipTests=true"
             }
         }
 
         stage("Deploy to Nexus") {
             steps {
                 // Déploiement vers Nexus en sautant les tests
-                sh "mvn clean deploy -DskipTests"
+                sh "mvn clean deploy"
             }
         }
     }
