@@ -47,8 +47,7 @@ pipeline {
                 sh "mvn clean deploy -DskipTests"
                 }
             }
-        }
-    }
+    
 
     post {
         success {
