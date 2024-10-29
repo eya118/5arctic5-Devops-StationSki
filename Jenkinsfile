@@ -6,26 +6,42 @@ pipeline {
             steps {
                 git branch: "WaelBouaouina_5arctic5-G3",
                     url: "https://github.com/Molka-Kbaier/5arctic5-G3-StationSki"
-                    
             }
         }
 
         stage("Compiling") {
             steps {
-                sh "mvn clean install"
+                sh "mvn clean compile"
+            }
+        }
+
+        stage("SonarQube") {
+            steps {
+                // Analyse SonarQube, suppose que le plugin SonarQube est bien configuré
+                withSonarQubeEnv(installationName: 'sonarqube-server') {
+                    sh "mvn sonar:sonar"
+                }
             }
         }
 
         stage("Testing") {
             steps {
-                sh "mvn clean test"
+                sh "mvn test"
             }
-            
         }
 
-        stage("Packaging") {
+        stage("JUnit Report") {
             steps {
-                sh "mvn clean package"
+                // Archive les résultats des tests sous forme de rapport JUnit
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+
+
+        stage("Deploy to Nexus") {
+            steps {
+                sh "mvn clean deploy -DskipTests"
+                }
             }
         }
     }
