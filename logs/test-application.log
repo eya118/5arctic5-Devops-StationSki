@@ -1,0 +1,15 @@
+2024-10-30 01:59:28 INFO  PisteServicesImpl:41 - Setup terminé pour le test avec la piste : Piste Bleue
+2024-10-30 01:59:28 INFO  PisteServicesImpl:102 - Début du test : testUpdatePiste
+2024-10-30 01:59:28 INFO  PisteServicesImpl:114 - testUpdatePiste terminé avec succès.
+2024-10-30 01:59:28 INFO  PisteServicesImpl:41 - Setup terminé pour le test avec la piste : Piste Bleue
+2024-10-30 01:59:28 INFO  PisteServicesImpl:120 - Début du test : testRemovePiste
+2024-10-30 01:59:28 INFO  PisteServicesImpl:130 - testRemovePiste terminé avec succès.
+2024-10-30 01:59:28 INFO  PisteServicesImpl:41 - Setup terminé pour le test avec la piste : Piste Bleue
+2024-10-30 01:59:28 INFO  PisteServicesImpl:84 - Début du test : testRetrievePistes
+2024-10-30 01:59:28 INFO  PisteServicesImpl:96 - testRetrievePistes terminé avec succès.
+2024-10-30 01:59:28 INFO  PisteServicesImpl:41 - Setup terminé pour le test avec la piste : Piste Bleue
+2024-10-30 01:59:28 INFO  PisteServicesImpl:47 - Début du test : testAddPiste
+2024-10-30 01:59:28 INFO  PisteServicesImpl:59 - testAddPiste terminé avec succès.
+2024-10-30 01:59:28 INFO  PisteServicesImpl:41 - Setup terminé pour le test avec la piste : Piste Bleue
+2024-10-30 01:59:28 INFO  PisteServicesImpl:65 - Début du test : testRetrieveAllPistes
+2024-10-30 01:59:28 INFO  PisteServicesImpl:78 - testRetrieveAllPistes terminé avec succès.
