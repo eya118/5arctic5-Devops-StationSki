@@ -79,6 +79,7 @@
     </distributionManagement>
 
     <build>
+        <finalName>5ARCTIC5-G3-StationSki</finalName>
         <plugins>
             <!-- Spring Boot Plugin -->
             <plugin>
