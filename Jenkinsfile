@@ -3,9 +3,8 @@ pipeline {
     stages {
         stage("cloning") {
             steps {
-                sh"git config --global http.postBuffer 524288000"
                 echo "========cloning with git========"
-                git url: "https://github.com/Molka-Kbaier/5arctic5-G3-StationSki.git",
+                git url: "git@github.com:Molka-Kbaier/5arctic5-G3-StationSki.git",
                     branch: "TamimHmizi_5Arctic5-G3",
                     credentialsId:"github"
             }
