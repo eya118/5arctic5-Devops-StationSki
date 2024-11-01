@@ -1,0 +1,32 @@
+services:
+  springbootapp:
+    image:  eya115/gestionski:1.0.0
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/stationSki?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SERVLET_CONTEXT_PATH: /api
+      SERVER_PORT: 8089
+      SPRING_MVC_FORMAT_DATE: yyyy-MM-dd
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
+
+  mysqldb:
+    image: mysql:5.7
+    container_name: mysqldb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ""  # Matches the empty password for the root user
+      MYSQL_DATABASE: stationSki
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
