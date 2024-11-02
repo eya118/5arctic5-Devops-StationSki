@@ -133,6 +133,12 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<version>1.10.0</version>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus-simpleclient</artifactId>
+			<version>1.13.4</version>
+		</dependency>
+
 		<!-- prometheus -->
 
 
