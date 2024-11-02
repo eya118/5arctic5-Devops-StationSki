@@ -80,7 +80,6 @@ pipeline {
             // Message d'échec du pipeline
             echo "Le pipeline a échoué."
         }
+    } 
     }
-
-
-   
+}
