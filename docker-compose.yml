@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  springbootapp:
+    image: WaelBouaouina-G3-StationSki
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/stationSki?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SERVLET_CONTEXT_PATH: /api
+      SERVER_PORT: 8089
+      SPRING_MVC_FORMAT_DATE: yyyy-MM-dd
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
+
+
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: stationSki
+      MYSQL_USER: 
+      MYSQL_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      -  dbdata:/var/lib/mysql
+    networks:
+      - springboot-mysql-net
+
+
+volumes:
+   dbdata:
+
