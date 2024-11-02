@@ -3,7 +3,7 @@ global:
 
 scrape_configs:
   - job_name: 'springbootapp'
-    metrics_path: 'api/actuator/prometheus'
+    metrics_path: '/api/actuator/prometheus'
     static_configs:
-      - targets: ['192.168.33.10:8089']
+      - targets: ['g3-devops-pipeline-eya-springbootapp-1:8089']
 
