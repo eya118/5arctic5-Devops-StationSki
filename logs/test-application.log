@@ -3,3 +3,5 @@
 2024-10-28 19:55:19 INFO  SkierServicesImplTest:190 - Starting addSkiertest
 2024-10-28 19:55:41 INFO  SkierServicesImplTest:166 - Starting testRetrieveSkiersBySubscriptionType
 2024-10-28 19:55:41 INFO  SkierServicesImplTest:178 -  testRetrieveSkiersBySubscriptionType completed successfully
+2024-11-02 23:18:59 INFO  SkierServicesImplTest:166 - Starting testRetrieveSkiersBySubscriptionType
+2024-11-02 23:18:59 INFO  SkierServicesImplTest:178 -  testRetrieveSkiersBySubscriptionType completed successfully
