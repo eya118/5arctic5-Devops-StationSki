@@ -27,10 +27,10 @@ services:
       MYSQL_DATABASE: stationSki
     volumes:
       - dbdata:/var/lib/mysql
-
+#each service is a docker-compose.yml
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: prometheusContainer
     ports:
       - "9090:9090"
     volumes:
