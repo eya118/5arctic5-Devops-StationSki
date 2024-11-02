@@ -1,15 +1,14 @@
 services:
   springbootapp:
-    image:  eya115/gestionski:1.0.0
+    image: eya115/gestionski:1.0.0
     ports:
       - "8089:8089"
     depends_on:
       - mysqldb
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/stationSki?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_PASSWORD: "admin"
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SERVLET_CONTEXT_PATH: /api
       SERVER_PORT: 8089
@@ -22,10 +21,10 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ""  # Matches the empty password for the root user
+      MYSQL_ROOT_PASSWORD: "admin"
       MYSQL_DATABASE: stationSki
       MYSQL_USER: root
-      MYSQL_PASSWORD: ""
+      MYSQL_PASSWORD: "admin"
     volumes:
       - dbdata:/var/lib/mysql
 
