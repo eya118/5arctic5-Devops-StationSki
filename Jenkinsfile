@@ -62,8 +62,8 @@ pipeline {
             steps {
                 // Se connecter à Docker Hub avec les identifiants
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-wael975',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS')]) {
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     // Pousser l'image vers Docker Hub
                     sh "docker push waelbouaouina-g3-stationski"
