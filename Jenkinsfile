@@ -54,7 +54,7 @@ pipeline {
         stage("Building Image") {
             steps {
                 // Construire l'image Docker
-                sh "docker build -t WaelBouaouina-G3-StationSki ."
+                sh "docker build -t waelbouaouina-g3-stationski ."
             }
         }
 
@@ -66,7 +66,7 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     // Pousser l'image vers Docker Hub
-                    sh "docker push WaelBouaouina-G3-StationSki"
+                    sh "docker push waelbouaouina-g3-stationski"
                 }
             }
         }
