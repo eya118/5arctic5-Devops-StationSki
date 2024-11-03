@@ -22,7 +22,7 @@ pipeline {
                     // Définir l'installation Maven
                     def mvn = tool "M2_HOME"
                     // Configuration de l'environnement SonarQube
-                    withSonarQubeEnv("SONARQUBE_SERVER") {  // Assurez-vous que "SONARQUBE_SERVER" correspond à l'ID de votre configuration SonarQube dans Jenkins
+                    withSonarQubeEnv("SONARQUBE_SERVER") {
                         // Exécution de la commande Maven avec le jeton d'authentification
                         sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski' -Dsonar.login=sqp_cc9cc391fa75d8fc9444640031a87972caf8a4c0"
                     }
@@ -54,7 +54,7 @@ pipeline {
         stage("Building Image") {
             steps {
                 // Construire l'image Docker
-                sh "docker build -t waelbouaouina-g3-stationski ."
+                sh "docker build -t wael975/g3-stationski ."
             }
         }
 
@@ -66,7 +66,7 @@ pipeline {
                 passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     // Pousser l'image vers Docker Hub
-                    sh "docker push waelbouaouina-g3-stationski"
+                    sh "docker push wael975/g3-stationski"
                 }
             }
         }
