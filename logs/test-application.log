@@ -1,0 +1,36 @@
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:121 - DÃ©but du test : testUpdateRegistration_Success
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:129 - Test rÃ©ussi : La rÃ©servation a Ã©tÃ© mise Ã  jour avec succÃ¨s
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:80 - DÃ©but du test : testAssignRegistrationToCourse_Success
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:90 - Test rÃ©ussi : La rÃ©servation a Ã©tÃ© assignÃ©e au cours
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:66 - DÃ©but du test : testAddRegistrationAndAssignToSkier_Success
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:75 - Test rÃ©ussi : La rÃ©servation a Ã©tÃ© ajoutÃ©e et assignÃ©e au skieur
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:134 - DÃ©but du test : testDeleteRegistration_Success
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:140 - Test rÃ©ussi : La rÃ©servation a Ã©tÃ© supprimÃ©e avec succÃ¨s
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:95 - DÃ©but du test : testFindById_Success
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:103 - Test rÃ©ussi : La rÃ©servation a Ã©tÃ© trouvÃ©e par son ID
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:50 - Initialisation des objets mockÃ©s pour les tests
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:108 - DÃ©but du test : testFindAllRegistrations
+2024-11-04 22:20:21 INFO  RegistrationServicesImplTestMock:116 - Test rÃ©ussi : Toutes les rÃ©servations ont Ã©tÃ© rÃ©cupÃ©rÃ©es
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:120 - Début du test : testUpdateRegistration_Success
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:128 - Test réussi : La réservation a été mise à jour avec succès
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:79 - Début du test : testAssignRegistrationToCourse_Success
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:89 - Test réussi : La réservation a été assignée au cours
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:65 - Début du test : testAddRegistrationAndAssignToSkier_Success
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:74 - Test réussi : La réservation a été ajoutée et assignée au skieur
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:133 - Début du test : testDeleteRegistration_Success
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:139 - Test réussi : La réservation a été supprimée avec succès
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:94 - Début du test : testFindById_Success
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:102 - Test réussi : La réservation a été trouvée par son ID
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:49 - Initialisation des objets mockés pour les tests
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:107 - Début du test : testFindAllRegistrations
+2024-11-04 22:38:35 INFO  RegistrationServicesImplMockTest:115 - Test réussi : Toutes les réservations ont été récupérées
