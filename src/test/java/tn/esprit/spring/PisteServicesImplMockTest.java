@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)  // Activer Mockito pour ce test
-public class PisteServicesImpltestMock {
+public class PisteServicesImplMockTest {
     private static final Logger logger = LogManager.getLogger(PisteServicesImpl.class);
     @Mock
     private IPisteRepository pisteRepository;  // Simuler le repository
