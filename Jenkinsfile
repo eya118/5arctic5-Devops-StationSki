@@ -54,7 +54,7 @@ pipeline {
         stage("Building Image") {
             steps {
                 // Construire l'image Docker
-                sh "docker build -t wael975/g3-stationski ."
+                sh "docker build -t wael975/waelbouaouina-g3-stationski ."
             }
         }
 
@@ -64,7 +64,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-wael975', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     // Pousser l'image vers Docker Hub
-                    sh "docker push wael975/g3-stationski"
+                    sh "docker push wael975/waelbouaouina-g3-stationski"
                 }
             }
         }
