@@ -3,9 +3,6 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'http://192.168.101.4:9000'
-        NEXUS_URL = 'http://192.168.101.4:8081'
-        SONARQUBE_CREDENTIALS = credentials('sonarqube-credentials')
-        NEXUS_CREDENTIALS = credentials('nexus-credentials')
     }
 
     stages {
@@ -25,56 +22,46 @@ pipeline {
             }
         }
 
-        stage('MVN MOCKITO') {
+        stage('Run Tests and Generate JaCoCo Report') {
             steps {
-                echo 'Running Mockito tests and generating coverage report...'
-                sh 'mvn test jacoco:report'
-                echo 'Mockito tests completed!'
+                echo 'Running tests and generating JaCoCo report...'
+                sh 'mvn clean test jacoco:report'
+                echo 'JaCoCo report generated successfully!'
             }
         }
 
-        stage('MVN SONARQUBE') {
+        stage('Verify JaCoCo Report') {
+            steps {
+                echo 'Verifying JaCoCo XML report file...'
+                sh 'ls -l target/site/jacoco/jacoco.xml || echo "JaCoCo report not found!"'
+            }
+        }
+
+        stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                sh """
-                 mvn sonar:sonar \
-                 -Dsonar.host.url=${SONARQUBE_URL} \
-                 -Dsonar.login=${SONARQUBE_CREDENTIALS_USR} \
-                 -Dsonar.password=${SONARQUBE_CREDENTIALS_PSW} \
-                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-        """
-        echo 'SonarQube analysis completed!'
-    }
-}
-
-
-        // Ajoutez les autres étapes ici...
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                    mvn sonar:sonar \
+                    -Dsonar.host.url=${SONARQUBE_URL} \
+                    -Dsonar.login=${SONAR_TOKEN} \
+                    -Dsonar.projectKey=Stationski-MolkaKbaier-G3-5ARCTIC5 \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                    -Dsonar.java.binaries=target/classes \
+                    -Dsonar.junit.reportPaths=target/surefire-reports
+                    """
+                }
+                echo 'SonarQube analysis completed!'
+            }
+        }
     }
 
     post {
-        always {
-            echo "======== Cleaning up Docker Resources ========"
-            sh "docker system prune -f || true"
-        }
         success {
             echo 'Pipeline completed successfully!'
-            emailext(
-                to: 'molka.kbaier@esprit.tn',
-                subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Le pipeline a été exécuté avec succès pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}.",
-                mimeType: 'text/html',
-                attachLog: true
-            )
         }
         failure {
-            echo 'Pipeline failed. Please check the logs for more details.'
-            emailext(
-                to: 'molka.kbaier@esprit.tn',
-                subject: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Le pipeline a échoué pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}. Consultez les logs pour plus de détails.",
-                mimeType: 'text/html',
-                attachLog: true
-            )
+            echo 'Pipeline failed. Check the logs for details.'
         }
     }
 }
