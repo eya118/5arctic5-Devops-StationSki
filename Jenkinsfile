@@ -1,67 +1,116 @@
 pipeline {
     agent any
 
-    environment {
-        SONARQUBE_URL = 'http://192.168.101.4:9000'
-    }
-
     stages {
-        stage('Checkout GIT') {
+        stage('Checkout') {
             steps {
-                echo 'Pulling the repository from GitHub'
-                git(branch: 'molkakbaier_5ARCTIC5_G3', url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki.git')
-                echo 'Repository pulled successfully!'
+                echo "======== Checking out source code ========"
+                // Récupérer le code source depuis GitHub
+                git branch: 'molkakbaier_5ARCTIC5_G3',
+                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki.git'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Compiling') {
             steps {
-                echo 'Starting Maven compile...'
-                sh 'mvn clean compile'
-                echo 'Maven compile completed!'
+                echo "======== Compiling with Maven ========"
+                // Compilation du code avec Maven
+                sh "mvn clean compile"
             }
         }
 
-        stage('Run Tests and Generate JaCoCo Report') {
+        stage('Testing') {
             steps {
-                echo 'Running tests and generating JaCoCo report...'
-                sh 'mvn clean test jacoco:report'
-                echo 'JaCoCo report generated successfully!'
+                echo "======== Running Tests with Maven ========"
+                // Exécution des tests
+                sh "mvn test"
             }
         }
 
-        stage('Verify JaCoCo Report') {
+        stage('Packaging') {
             steps {
-                echo 'Verifying JaCoCo XML report file...'
-                sh 'ls -l target/site/jacoco/jacoco.xml || echo "JaCoCo report not found!"'
+                echo "======== Packaging the Application ========"
+                // Générer le fichier JAR avec Maven
+                sh "mvn clean package"
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Docker Build') {
             steps {
-                echo 'Running SonarQube analysis...'
-                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    sh """
-                    mvn sonar:sonar \
-                    -Dsonar.host.url=${SONARQUBE_URL} \
-                    -Dsonar.login=${SONAR_TOKEN} \
-                    -Dsonar.projectKey=Stationski-MolkaKbaier-G3-5ARCTIC5 \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                    -Dsonar.java.binaries=target/classes \
-                    -Dsonar.junit.reportPaths=target/surefire-reports
-                    """
+                echo "======== Building Docker Image ========"
+                // Construire l'image Docker
+                sh "docker build -t molkak/station-skii:1.0.0 ."
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                echo "======== Pushing Docker Image to Docker Hub ========"
+                // Pousser l'image Docker vers Docker Hub
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    sh 'docker push molkak/station-skii:1.0.0'
                 }
-                echo 'SonarQube analysis completed!'
+            }
+        }
+
+        stage('Cleanup Backend Container') {
+            steps {
+                echo "======== Stopping Existing Backend Container (if any) ========"
+                script {
+                    def backendContainer = sh(
+                        script: "docker ps -q --filter name=dockerpipline_backend_1",
+                        returnStdout: true
+                    ).trim()
+                    if (backendContainer) {
+                        sh "docker stop $backendContainer && docker rm $backendContainer"
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup MySQL Container and Image') {
+            steps {
+                echo "======== Removing MySQL Container and Image (if exists) ========"
+                // Arrêter et supprimer le conteneur et l'image MySQL si présents
+                script {
+                    def mysqlRunning = sh(script: "docker ps -q --filter ancestor=mysql:8", returnStdout: true).trim()
+                    if (mysqlRunning) {
+                        sh "docker stop $mysqlRunning && docker rm $mysqlRunning"
+                    }
+                    def mysqlImageExists = sh(script: "docker images -q mysql:8", returnStdout: true).trim()
+                    if (mysqlImageExists) {
+                        sh "docker rmi -f mysql:8"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                echo "======== Deploying Application with Docker Compose ========"
+                // Relancer les conteneurs avec Docker Compose
+                sh "docker-compose down || true"  // Éviter une erreur si aucun conteneur n'est actif
+                sh "docker-compose up -d"
             }
         }
     }
 
     post {
+        always {
+            echo "======== Cleaning up Docker Resources ========"
+            // Nettoyage des ressources inutilisées
+            sh "docker system prune -f || true"
+        }
         success {
-            echo 'Pipeline completed successfully!'
+            echo "======== Build and Deployment Successful! ========"
         }
         failure {
-            echo 'Pipeline failed. Check the logs for details.'
+            echo "======== Build or Deployment Failed. Check the logs. ========"
         }
     }
 }
