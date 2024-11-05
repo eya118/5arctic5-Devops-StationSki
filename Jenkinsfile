@@ -25,97 +25,30 @@ pipeline {
             }
         }
 
-        stage('MVN SONARQUBE') {
-            steps {
-                echo 'Running SonarQube analysis...'
-                sh """
-                   mvn sonar:sonar \
-                   -Dsonar.login=${SONARQUBE_CREDENTIALS_USR} \
-                   -Dsonar.password=${SONARQUBE_CREDENTIALS_PSW}
-                """
-                echo 'SonarQube analysis completed!'
-            }
-        }
-
         stage('MVN MOCKITO') {
             steps {
-                echo 'Running Mockito tests...'
-                sh 'mvn test'
+                echo 'Running Mockito tests and generating coverage report...'
+                sh 'mvn test jacoco:report'
                 echo 'Mockito tests completed!'
             }
         }
 
-        stage('MVN NEXUS') {
+        stage('MVN SONARQUBE') {
             steps {
-                echo 'Deploying artifacts to Nexus...'
+                echo 'Running SonarQube analysis...'
                 sh """
-                   mvn deploy -DskipTests \
-                   -Dnexus.username=${NEXUS_CREDENTIALS_USR} \
-                   -Dnexus.password=${NEXUS_CREDENTIALS_PSW}
-                """
-                echo 'Artifacts deployed to Nexus successfully!'
-            }
-        }
+                 mvn sonar:sonar \
+                 -Dsonar.host.url=${SONARQUBE_URL} \
+                 -Dsonar.login=${SONARQUBE_CREDENTIALS_USR} \
+                 -Dsonar.password=${SONARQUBE_CREDENTIALS_PSW} \
+                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        """
+        echo 'SonarQube analysis completed!'
+    }
+}
 
-        stage('Docker Build') {
-            steps {
-                echo "======== Building Docker Image ========"
-                sh "docker build -t molkak/station-ski:1.0.0 ."
-            }
-        }
 
-        stage('Docker Push') {
-            steps {
-                echo "======== Pushing Docker Image to Docker Hub ========"
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'docker push molkak/station-ski:1.0.0'
-                }
-            }
-        }
-
-        stage('Cleanup Backend Container') {
-            steps {
-                echo "======== Stopping Existing Backend Container (if any) ========"
-                script {
-                    def backendContainer = sh(
-                        script: "docker ps -q --filter name=totpipline_backend_1",
-                        returnStdout: true
-                    ).trim()
-                    if (backendContainer) {
-                        sh "docker stop $backendContainer && docker rm $backendContainer"
-                    }
-                }
-            }
-        }
-
-        stage('Cleanup MySQL Container and Image') {
-            steps {
-                echo "======== Removing MySQL Container and Image (if exists) ========"
-                script {
-                    def mysqlRunning = sh(script: "docker ps -q --filter ancestor=mysql:8", returnStdout: true).trim()
-                    if (mysqlRunning) {
-                        sh "docker stop $mysqlRunning && docker rm $mysqlRunning"
-                    }
-                    def mysqlImageExists = sh(script: "docker images -q mysql:8", returnStdout: true).trim()
-                    if (mysqlImageExists) {
-                        sh "docker rmi -f mysql:8"
-                    }
-                }
-            }
-        }
-
-        stage('Deploy with Docker Compose') {
-            steps {
-                echo "======== Deploying Application with Docker Compose ========"
-                sh "docker-compose down || true"
-                sh "docker-compose up -d"
-            }
-        }
+        // Ajoutez les autres étapes ici...
     }
 
     post {
@@ -125,9 +58,23 @@ pipeline {
         }
         success {
             echo 'Pipeline completed successfully!'
+            emailext(
+                to: 'molka.kbaier@esprit.tn',
+                subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Le pipeline a été exécuté avec succès pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}.",
+                mimeType: 'text/html',
+                attachLog: true
+            )
         }
         failure {
             echo 'Pipeline failed. Please check the logs for more details.'
+            emailext(
+                to: 'molka.kbaier@esprit.tn',
+                subject: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Le pipeline a échoué pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}. Consultez les logs pour plus de détails.",
+                mimeType: 'text/html',
+                attachLog: true
+            )
         }
     }
 }
