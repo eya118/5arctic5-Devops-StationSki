@@ -60,14 +60,15 @@ pipeline {
 
         stage("Pushing Image") {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-wael975') {
-                        sh "docker push wael975/waelbouaouina-g3-stationski"
-                    }
+                // Se connecter à Docker Hub avec les identifiants
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-wael975',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS')]) {
+                    sh "docker logout"
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    // Pousser l'image vers Docker Hub
+                    sh "docker push wael975/waelbouaouina-g3-stationski"
                 }
-
-
-
             }
         }
     }
