@@ -166,6 +166,21 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- added plugins jacococ -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.7</version> <!-- Utilisez la version souhaitée -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--  end added plugins jacococ -->
 		</plugins>
 	</build>
 
