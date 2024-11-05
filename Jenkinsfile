@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'http://192.168.101.4:9000'
+        NEXUS_URL = 'http://192.168.101.4:8081'
+        NEXUS_CREDENTIALS = credentials('nexus-credentials')
     }
 
     stages {
@@ -54,14 +56,116 @@ pipeline {
                 echo 'SonarQube analysis completed!'
             }
         }
+
+        stage('MVN MOCKITO') {
+            steps {
+                echo 'Running Mockito tests...'
+                sh 'mvn test'
+                echo 'Mockito tests completed!'
+            }
+        }
+
+        stage('MVN NEXUS') {
+            steps {
+                echo 'Deploying artifacts to Nexus...'
+                sh """
+                   mvn deploy -DskipTests \
+                   -Dnexus.username=${NEXUS_CREDENTIALS_USR} \
+                   -Dnexus.password=${NEXUS_CREDENTIALS_PSW}
+                """
+                echo 'Artifacts deployed to Nexus successfully!'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo "======== Building Docker Image ========"
+                sh "docker build -t molkak/station-ski:1.0.0 ."
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                echo "======== Pushing Docker Image to Docker Hub ========"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    sh 'docker push molkak/station-ski:1.0.0'
+                }
+            }
+        }
+
+        stage('Cleanup Backend Container') {
+            steps {
+                echo "======== Stopping Existing Backend Container (if any) ========"
+                script {
+                    def backendContainer = sh(
+                        script: "docker ps -q --filter name=totpiplineemail_backend_1",
+                        returnStdout: true
+                    ).trim()
+                    if (backendContainer) {
+                        sh "docker stop $backendContainer && docker rm $backendContainer"
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup MySQL Container and Image') {
+            steps {
+                echo "======== Removing MySQL Container and Image (if exists) ========"
+                script {
+                    def mysqlRunning = sh(script: "docker ps -q --filter ancestor=mysql:8", returnStdout: true).trim()
+                    if (mysqlRunning) {
+                        sh "docker stop $mysqlRunning && docker rm $mysqlRunning"
+                    }
+                    def mysqlImageExists = sh(script: "docker images -q mysql:8", returnStdout: true).trim()
+                    if (mysqlImageExists) {
+                        sh "docker rmi -f mysql:8"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                echo "======== Deploying Application with Docker Compose ========"
+                sh "docker-compose down || true"
+                sh "docker-compose up -d"
+            }
+        }
     }
 
     post {
+        always {
+            echo "======== Cleaning up Docker Resources ========"
+            sh "docker system prune -f || true"
+        }
         success {
             echo 'Pipeline completed successfully!'
+            emailext(
+                to: 'molka.kbaier@esprit.tn',
+                subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Le pipeline a été exécuté avec succès pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}.",
+                mimeType: 'text/html',
+                attachLog: true,
+                from: 'molka.kbaier@esprit.tn',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+            )
         }
         failure {
-            echo 'Pipeline failed. Check the logs for details.'
+            echo 'Pipeline failed. Please check the logs for more details.'
+            emailext(
+                to: 'molka.kbaier@esprit.tn',
+                subject: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Le pipeline a échoué pour le job ${env.JOB_NAME} - build #${env.BUILD_NUMBER}. Consultez les logs pour plus de détails.",
+                mimeType: 'text/html',
+                attachLog: true,
+                from: 'molka.kbaier@esprit.tn',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+            )
         }
     }
 }
