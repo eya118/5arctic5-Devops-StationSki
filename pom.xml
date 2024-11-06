@@ -16,6 +16,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+		<swagger.version>2.9.2</swagger.version>
+
 	</properties>
 	<dependencies>
 		<dependency>
@@ -67,11 +69,23 @@
 		        <artifactId>micrometer-registry-prometheus</artifactId>
 		    </dependency>
     <!-- Swagger Dependencies -->
-		    <dependency>
-		        <groupId>io.springfox</groupId>
-		        <artifactId>springfox-boot-starter</artifactId>
-		        <version>3.0.0</version>
-		    </dependency>
+
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-swagger2</artifactId>
+		<version>${swagger.version}</version>
+	</dependency>
+	<!-- swagger-ui for api documentation web ui -->
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-swagger-ui</artifactId>
+		<version>${swagger.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-data-rest</artifactId>
+		<version>${swagger.version}</version>
+	</dependency>
 
 	</dependencies>
 
