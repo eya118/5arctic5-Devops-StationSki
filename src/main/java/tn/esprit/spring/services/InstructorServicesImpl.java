@@ -7,10 +7,13 @@ import tn.esprit.spring.entities.Instructor;
 import tn.esprit.spring.repositories.ICourseRepository;
 import tn.esprit.spring.repositories.IInstructorRepository;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Optional;  // <-- This is the import for Optional
 
 @AllArgsConstructor
 @Service
@@ -39,47 +42,68 @@ public class InstructorServicesImpl implements IInstructorServices{
         return instructorRepository.findById(numInstructor).orElse(null);
     }
 
-// Method to add an instructor and assign courses
+    @Override
+    public Instructor addInstructorAndAssignToCourse(Instructor instructor, Long numCourse) {
+        Course course = courseRepository.findById(numCourse).orElse(null);
+        Set<Course> courseSet = new HashSet<>();
+        courseSet.add(course);
+        instructor.setCourses(courseSet);
+        return instructorRepository.save(instructor);
+    }
+    @Override
+    // New method to get instructors by course
+    public List<Instructor> getInstructorsByCourse(Long numCourse) {
+        Course course = courseRepository.findById(numCourse).orElse(null);
+        if (course != null) {
+            return instructorRepository.findAll().stream()
+                    .filter(instructor -> instructor.getCourses().contains(course))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
+    }
+
     public Instructor addInstructorAndAssignCourses(Instructor instructor, Set<Long> courseIds) {
         LocalDate currentDate = LocalDate.now();
         long experienceYears = ChronoUnit.YEARS.between(instructor.getDateOfHire(), currentDate);
-        int maxCourses = experienceYears > 5 ? 5 : 3;  // Instructor can handle max 5 courses if more than 5 years of experience, otherwise max 3
+        int maxCourses = experienceYears > 5 ? 5 : 3;  // Max 5 courses if more than 5 years of experience, otherwise max 3
 
-        // Check if the instructor is assigned more than the allowed number of courses
         if (courseIds.size() > maxCourses) {
             throw new IllegalArgumentException("Instructor cannot be assigned more than " + maxCourses + " courses");
         }
 
-        // Fetch the courses from the course repository by their IDs
+        // Fetch courses from the repository
         Set<Course> courses = courseIds.stream()
                 .map(courseRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
 
-        // Check for schedule conflicts between the selected courses
+        if (courses.size() != courseIds.size()) {
+            throw new IllegalArgumentException("Course not found");
+        }
+
+        // Check for schedule conflicts
         if (hasScheduleConflict(courses)) {
             throw new IllegalStateException("Schedule conflict detected for the selected courses");
         }
 
-        // Assign courses to instructor
+        // Assign the courses to the instructor
         instructor.setCourses(courses);
 
-        // Save the instructor with the assigned courses
+        // Save the instructor and return the saved entity
         return instructorRepository.save(instructor);
     }
 
-    // Helper method to check if there are any schedule conflicts among the selected courses
     private boolean hasScheduleConflict(Set<Course> courses) {
-        // Check for schedule conflicts based on 'timeSlot' (used as a simple conflict detection)
+        // Check for schedule conflicts using the timeSlot property of courses
         for (Course course1 : courses) {
             for (Course course2 : courses) {
                 if (!course1.equals(course2) && course1.getTimeSlot() == course2.getTimeSlot()) {
-                    return true; // Conflict found if courses share the same time slot
+                    return true;  // Conflict detected if the time slots are the same
                 }
             }
         }
-        return false; // No conflicts found
+        return false;  // No conflicts found
     }
 
 }
