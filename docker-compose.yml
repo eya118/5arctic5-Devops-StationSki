@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   springbootapp:
-    image: wael975/station-ski:1.0.0
+    image: wael975/station-ski
     build:
       context: .
       dockerfile: Dockerfile

@@ -46,7 +46,7 @@ pipeline {
 
         stage("Building Image") {
             steps {
-                sh "docker build -t wael975/station-ski:1.0.0:${env.BUILD_NUMBER} ."
+                sh "docker build -t wael975/station-ski:${env.BUILD_NUMBER} ."
             }
         }
 
@@ -55,7 +55,7 @@ pipeline {
                 echo "======== Pushing Docker Image to Docker Hub ========"
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
                     sh 'echo $DOCKER_TOKEN | docker login -u wael975 --password-stdin' // Remplacez "wael975" par votre nom d’utilisateur Docker
-                    sh "docker push wael975/station-ski:1.0.0:${env.BUILD_NUMBER}"
+                    sh "docker push wael975/station-ski:${env.BUILD_NUMBER}"
                 }
             }
         }
