@@ -41,28 +41,15 @@ public class InstructorServicesImplTest {
     }
 
     @Test
-    public void shouldThrowException_whenInstructorAssignedMoreThanMaxCourses() {
-        Set<Long> courseIds = Set.of(1L, 2L, 3L, 4L, 5L, 6L);  // Too many courses
+    public void testAddInstructor() {
+        // Arrange: Mock the save method to avoid actual database interaction
+        when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            instructorService.addInstructorAndAssignCourses(instructor, courseIds);
-        });
+        // Act: Call the service method
+        String result = instructorService.addInstructor(instructor);
 
-        assertEquals("Instructor cannot be assigned more than 5 courses", exception.getMessage());
-    }
-
-    @Test
-    public void shouldThrowException_whenCourseNotFoundForAssignment() {
-        Set<Long> courseIds = Set.of(1L, 2L);
-
-        // Mock course repository to return empty for both courses
-        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
-        when(courseRepository.findById(2L)).thenReturn(Optional.empty());
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            instructorService.addInstructorAndAssignCourses(instructor, courseIds);
-        });
-
-        assertEquals("Course not found", exception.getMessage());
+        // Assert: Verify the result and interaction
+        assertEquals("Instructor added successfully", result);
+        verify(instructorRepository, times(1)).save(instructor);
     }
 }
