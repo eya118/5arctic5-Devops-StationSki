@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        // Définir les variables d'environnement pour Docker Credentials
+        DOCKER_CREDENTIALS_USR = credentials('docker-credentials-username')
+        DOCKER_CREDENTIALS_PSW = credentials('docker-credentials-password')
+    }
+
     stages {
         stage("Cloning") {
             steps {
@@ -20,7 +26,7 @@ pipeline {
                 script {
                     def mvn = tool "M2_HOME"
                     withSonarQubeEnv("SONARQUBE_SERVER") {
-                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski' -Dsonar.login=sqp_cc9cc391fa75d8fc9444640031a87972caf8a4c0"
+                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski' -Dsonar.login=${SONARQUBE_TOKEN}"
                     }
                 }
             }
@@ -55,8 +61,10 @@ pipeline {
             steps {
                 script {
                     // Connexion à Docker Hub avec les credentials
-                    sh "echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin"
-                    sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials-id', usernameVariable: 'DOCKER_CREDENTIALS_USR', passwordVariable: 'DOCKER_CREDENTIALS_PSW')]) {
+                        sh "echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin"
+                        sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
+                    }
                 }
             }
         }
