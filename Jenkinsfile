@@ -153,14 +153,8 @@ pipeline {
         failure {
             mail to: 'team@example.com',
                  subject: "Erreur dans le pipeline : ${currentBuild.fullDisplayName}",
-                 body: """\
-                    Le pipeline a échoué à l'étape: ${currentBuild.currentResult}.
+                 body: "Le pipeline a échoué à l'étape: ${currentBuild.currentResult}."
 
-                    Pour plus de détails, consultez les logs dans Jenkins.
-
-                    Cordialement,
-                    L'équipe DevOps
-                    """
         }
     }
 }
