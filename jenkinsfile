@@ -1,0 +1,112 @@
+pipeline {
+    agent any
+
+    environment {
+        NEXUS_URL = 'http://192.168.33.10:8081'
+    }
+    stages {
+        stage('Checkout GIT') {
+            steps {
+                echo 'Pulling the repository from GitHub'
+                git(
+                    branch: 'eyafilali_5arctic5_G3',
+                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki.git'
+                )
+                echo 'Repository pulled successfully!'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                echo 'Starting Maven compile...'
+                sh 'mvn clean compile'
+                echo 'Maven compile completed!'
+            }
+        }
+
+       stage('MVN SONARQUBE') {
+            steps {
+                echo 'Running SonarQube analysis...'
+                sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=Sonarqube2024!1 -Dsonar.host.url=http://192.168.33.10:9000/'
+                echo 'SonarQube analysis completed!'
+            }
+        }
+
+     stage('Generate JaCoCo Report') {
+            steps {
+               jacoco(
+                     execPattern: '**/target/jacoco.exec',     // Chemin vers le fichier jacoco.exec
+                     classPattern: '**/target/classes',        // Chemin vers les classes compilées
+                     sourcePattern: '**/src/main/java',        // Chemin vers le code source
+                     exclusionPattern: '/test/'            // Exclure les fichiers de test
+)
+
+           }
+        }
+
+
+
+    stage('MVN NEXUS') {
+    steps {
+        echo 'Deploying artifacts to Nexus...'
+        sh """
+           mvn deploy -DskipTests \
+           -Dnexus.username=admin \
+           -Dnexus.password=nexus
+        """
+        echo 'Artifacts deployed to Nexus successfully!'
+    }
+}
+ stage('Login to Docker Hub') {
+            steps {
+                script {
+                    echo 'Logging in to Docker Hub...'
+                    sh "echo 'Filalieya1a' | docker login -u eya115 --password-stdin"
+                    echo 'Logged in successfully!'
+                }
+            }
+        }
+
+          stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                script {
+                    // Use the sh command to build the Docker image
+                    sh "docker build --no-cache -t eya115/gestionskitest2:2.0.0 ."
+                }
+                echo 'Docker image built successfully!'
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+                script {
+                    sh "docker push eya115/gestionskitest2:2.0.0"
+                }
+                echo 'Docker image pushed to Docker Hub successfully!'
+            }
+        }
+
+
+      stage('Build and Run Docker Compose') {
+            steps {
+                echo 'Building and running Docker containers with Docker Compose...'
+                script {
+                    sh 'docker-compose up --build -d'  // Use -d for detached mode
+                }
+                echo 'Docker Compose services started successfully!'
+            }
+        }
+    }
+
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs for more details.'
+        }
+    }
+}
