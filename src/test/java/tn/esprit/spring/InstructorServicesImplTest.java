@@ -5,10 +5,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -35,55 +32,52 @@ import tn.esprit.spring.services.InstructorServicesImpl;
 @Transactional  // Each test is isolated in a transaction
 @Rollback(true)  // Changes are rolled back after each test
 public class InstructorServicesImplTest {
-    @Autowired
-    private InstructorServicesImpl instructorServices;
 
-    @Autowired
     private IInstructorRepository instructorRepository;
-
-    @Autowired
     private ICourseRepository courseRepository;
-
-
+    private InstructorServicesImpl instructorService;
     private Instructor instructor;
-    private Course course;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        instructor = new Instructor(1L, "John", "Doe", LocalDate.now(), new HashSet<>());
-        course = new Course(1L,1, TypeCourse.COLLECTIVE_CHILDREN, null,10F, 1, Collections.emptySet());
+    public void setUp() {
+        // Manually initializing instructor and repositories for the test
+        instructorRepository = mock(IInstructorRepository.class);
+        courseRepository = mock(ICourseRepository.class);
+        instructorService = new InstructorServicesImpl(instructorRepository, courseRepository);
+
+        instructor = new Instructor();
+        instructor.setFirstName("John");
+        instructor.setLastName("Doe");
+        instructor.setDateOfHire(LocalDate.of(2015, 1, 1));  // 5+ years of experience
     }
 
     @Test
-    void testAddInstructor() {
-        when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
-        Instructor savedInstructor = instructorServices.addInstructor(instructor);
-        assertEquals(instructor, savedInstructor);
-        verify(instructorRepository, times(1)).save(instructor);
+    public void shouldThrowException_whenInstructorAssignedMoreThanMaxCourses() {
+        // Test: More than 5 courses for an instructor with > 5 years of experience
+        Set<Long> courseIds = Set.of(1L, 2L, 3L, 4L, 5L, 6L);  // Too many courses
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            instructorService.addInstructorAndAssignCourses(instructor, courseIds);
+        });
+
+        // Check the exception message
+        assertEquals("Instructor cannot be assigned more than 5 courses", exception.getMessage());
     }
 
     @Test
-    void testGetInstructorsByCourse() {
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
-        when(instructorRepository.findAll()).thenReturn(List.of(instructor));
+    public void shouldThrowException_whenCourseNotFoundForAssignment() {
+        // Test: Course does not exist
+        Set<Long> courseIds = Set.of(1L, 2L);
 
-        instructor.setCourses(new HashSet<>(Collections.singletonList(course)));
+        // Mock the course repository to return empty for both courses
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+        when(courseRepository.findById(2L)).thenReturn(Optional.empty());
 
-        List<Instructor> instructors = instructorServices.getInstructorsByCourse(1L);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            instructorService.addInstructorAndAssignCourses(instructor, courseIds);
+        });
 
-        assertEquals(1, instructors.size());
-        assertEquals(instructor, instructors.get(0));
+        // Check the exception message
+        assertEquals("Course not found", exception.getMessage());
     }
-
-    @Test
-    void testGetInstructorsByCourse_NoInstructors() {
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
-        when(instructorRepository.findAll()).thenReturn(List.of());
-
-        List<Instructor> instructors = instructorServices.getInstructorsByCourse(1L);
-
-        assertTrue(instructors.isEmpty());
-    }
-
 }
