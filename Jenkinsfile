@@ -51,20 +51,15 @@ pipeline {
             }
         }
 
-        stage("Pushing Image") {
+        stage('Push Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS')]) {
-                    echo "Docker User: $DOCKER_USER"
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
-                    """
+                script {
+                    // Connexion à Docker Hub avec les credentials
+                    sh "echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin"
+                    sh "docker push wael975/waelbouaouina-g3-stationski"
                 }
             }
-        }
-    }
+
 
     post {
         success {
