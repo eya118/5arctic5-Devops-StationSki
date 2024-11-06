@@ -47,20 +47,20 @@ pipeline {
         stage("Building Image") {
             steps {
                 // Ajout d'un tag unique basé sur le numéro de build Jenkins
-                sh "docker build -t wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER} ."
+                sh "docker build -t wael975/waelbou-g3-stationski:${env.BUILD_NUMBER} ."
             }
         }
 
-        stage("Pushing Image") {
+        stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS')]) {
-                    echo "Docker User: $DOCKER_USER"
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
-                    """
+                echo "======== Pushing Docker Image to Docker Hub ========"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    sh "docker push wael975/waelbou-g3-stationski:${env.BUILD_NUMBER}"
                 }
             }
         }

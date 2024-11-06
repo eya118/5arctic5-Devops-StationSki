@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   springbootapp:
-    image: wael975/wbouaouina-g3-stationski
+    image: wael975/waelbou-g3-stationski
     build:
       context: .
       dockerfile: Dockerfile
