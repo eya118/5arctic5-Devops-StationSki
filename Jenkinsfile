@@ -4,9 +4,12 @@ pipeline {
     environment {
         SONARQUBE_URL = 'http://192.168.101.6:9000'                  // URL de SonarQube
         NEXUS_URL = 'http://192.168.101.6:8081'                       // URL de Nexus
-        SONARQUBE_CREDENTIALS = credentials('sonarqube-credentials')  // Credentials SonarQube
-        NEXUS_CREDENTIALS = credentials('nexus-credentials')          // Credentials Nexus
-        GMAIL_CREDENTIALS = credentials('gmailcredential')            // Credentials Gmail pour notifications e-mail
+        SONARQUBE_CREDENTIALS_USR = credentials('sonarqube-credentials').username  // SonarQube Username
+        SONARQUBE_CREDENTIALS_PSW = credentials('sonarqube-credentials').password  // SonarQube Password
+        NEXUS_CREDENTIALS_USR = credentials('nexus-credentials').username  // Nexus Username
+        NEXUS_CREDENTIALS_PSW = credentials('nexus-credentials').password  // Nexus Password
+        GMAIL_CREDENTIALS_USR = credentials('gmailcredential').username  // Gmail Username
+        GMAIL_CREDENTIALS_PSW = credentials('gmailcredential').password  // Gmail Password
     }
 
     stages {
@@ -49,7 +52,12 @@ pipeline {
         stage('Verify JaCoCo Report') {
             steps {
                 echo 'Checking if JaCoCo XML report file exists...'
-                sh 'ls -l target/site/jacoco/jacoco.xml || echo "JaCoCo report not found!"'
+                script {
+                    def fileExists = sh(script: 'ls target/site/jacoco/jacoco.xml', returnStatus: true)
+                    if (fileExists != 0) {
+                        echo "JaCoCo report not found!"
+                    }
+                }
             }
         }
 
@@ -154,7 +162,6 @@ pipeline {
             mail to: 'team@example.com',
                  subject: "Erreur dans le pipeline : ${currentBuild.fullDisplayName}",
                  body: "Le pipeline a échoué à l'étape: ${currentBuild.currentResult}."
-
         }
     }
 }
