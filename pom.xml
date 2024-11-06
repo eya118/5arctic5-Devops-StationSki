@@ -70,23 +70,11 @@
 		    </dependency>
     <!-- Swagger Dependencies -->
 
-	
-		    <dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<!-- swagger-ui for api documentation web ui -->
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-data-rest</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
+		  <groupId>org.springdoc</groupId>
+		  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		  <version>2.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
