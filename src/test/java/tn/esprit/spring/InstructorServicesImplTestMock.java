@@ -5,10 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,53 +22,57 @@ import tn.esprit.spring.services.InstructorServicesImpl;
 public class InstructorServicesImplTestMock {
 
     @Mock
-    private IInstructorRepository instructorRepository;  // Mock the instructor repository
+    private IInstructorRepository instructorRepository;  // Mocked repository for Instructor
 
     @Mock
-    private ICourseRepository courseRepository;  // Mock the course repository
+    private ICourseRepository courseRepository;  // Mocked repository for Course
 
     @InjectMocks
-    private InstructorServicesImpl instructorServices;  // Inject mocks into the service
+    private InstructorServicesImpl instructorService;  // The service class to be tested
 
     private Instructor instructor;
-    private Course course;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);  // Initialize mocks
-        instructor = new Instructor(1L, "John", "Doe", LocalDate.now(), new HashSet<>());
-        course = new Course(1L, 1, TypeCourse.COLLECTIVE_CHILDREN, null, 10F, 1, Collections.emptySet());
+    public void setUp() {
+        // Initializing the instructor object before each test
+        instructor = new Instructor();
+        instructor.setFirstName("John");
+        instructor.setLastName("Doe");
+        instructor.setDateOfHire(LocalDate.of(2015, 1, 1));  // 5+ years of experience
     }
 
     @Test
-    void testAddInstructor() {
-        when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);  // Mock save behavior
+    public void shouldAddInstructorAndAssignCourses_whenValidData() {
+        // Valid course IDs
+        Set<Long> courseIds = Set.of(1L, 2L, 3L);
 
-        Instructor savedInstructor = instructorServices.addInstructor(instructor);  // Call the method to test
+        // Mocking the course repository responses
+        Course course1 = new Course();
+        course1.setNumCourse(1L);
+        course1.setTimeSlot(1);
 
-        assertEquals(instructor, savedInstructor);  // Verify the saved instructor
-        verify(instructorRepository, times(1)).save(instructor);  // Verify that save was called once
-    }
+        Course course2 = new Course();
+        course2.setNumCourse(2L);
+        course2.setTimeSlot(2);
 
-    @Test
-    void testGetInstructorsByCourse() {
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));  // Mock course retrieval
-        instructor.setCourses(new HashSet<>(Collections.singletonList(course)));  // Assign the course to the instructor
-        when(instructorRepository.findAll()).thenReturn(List.of(instructor));  // Mock instructor retrieval
+        Course course3 = new Course();
+        course3.setNumCourse(3L);
+        course3.setTimeSlot(3);
 
-        List<Instructor> instructors = instructorServices.getInstructorsByCourse(1L);  // Call the method to test
+        // Setting up mocks for course repository
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course1));
+        when(courseRepository.findById(2L)).thenReturn(Optional.of(course2));
+        when(courseRepository.findById(3L)).thenReturn(Optional.of(course3));
 
-        assertEquals(1, instructors.size());  // Verify the size of the list
-        assertEquals(instructor, instructors.get(0));  // Verify the instructor is as expected
-    }
+        // Mocking instructor repository save method
+        when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
 
-    @Test
-    void testGetInstructorsByCourse_NoInstructors() {
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));  // Mock course retrieval
-        when(instructorRepository.findAll()).thenReturn(List.of());  // Mock no instructors returned
+        // Service call
+        Instructor savedInstructor = instructorService.addInstructorAndAssignCourses(instructor, courseIds);
 
-        List<Instructor> instructors = instructorServices.getInstructorsByCourse(1L);  // Call the method to test
-
-        assertTrue(instructors.isEmpty());  // Verify the list is empty
+        // Assertions
+        assertNotNull(savedInstructor);  // Ensuring instructor is saved
+        assertEquals(3, savedInstructor.getCourses().size());  // Checking number of courses assigned
+        verify(instructorRepository, times(1)).save(instructor);  // Verifying save was called once
     }
 }
