@@ -53,7 +53,7 @@ pipeline {
 
         stage("Pushing Image") {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'wael975-dockerhub',
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
                 usernameVariable: 'DOCKER_USER',
                 passwordVariable: 'DOCKER_PASS')]) {
                     echo "Docker User: $DOCKER_USER"
