@@ -56,10 +56,11 @@ pipeline {
                 script {
                     // Connexion à Docker Hub avec les credentials
                     sh "echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin"
-                    sh "docker push wael975/waelbouaouina-g3-stationski"
+                    sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
                 }
             }
-
+        }
+    }
 
     post {
         success {
