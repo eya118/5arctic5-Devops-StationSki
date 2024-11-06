@@ -53,12 +53,16 @@ pipeline {
 
         stage("Pushing Image") {
             steps {
-                // Utilisation de docker.withRegistry pour se connecter au registre Docker
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        echo "Docker login réussi, envoi de l'image..."
-                        sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
-                    }
+                // Connexion explicite à Docker Hub avec l'ID d'identification dans Jenkins
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS')]) {
+                    echo "Docker login réussi, envoi de l'image..."
+                    // Connexion explicite avec Docker Hub
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
+                    """
                 }
             }
         }
