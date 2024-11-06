@@ -53,14 +53,10 @@ pipeline {
 
         stage("Pushing Image") {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS')]) {
-                    echo "Docker User: $DOCKER_USER"
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
-                    """
+                // Utilisation de docker.withRegistry pour se connecter au registre Docker
+                docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
+                    echo "Docker login réussi, envoi de l'image..."
+                    sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
                 }
             }
         }
