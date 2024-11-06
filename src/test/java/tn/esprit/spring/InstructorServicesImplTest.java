@@ -46,10 +46,12 @@ public class InstructorServicesImplTest {
         when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
 
         // Act: Call the service method
-        String result = instructorService.addInstructor(instructor);
+        Instructor result = instructorService.addInstructor(instructor);
 
         // Assert: Verify the result and interaction
-        assertEquals("Instructor added successfully", result);
+        assertNotNull(result);
+        assertEquals(instructor.getFirstName(), result.getFirstName());
+        assertEquals(instructor.getLastName(), result.getLastName());
         verify(instructorRepository, times(1)).save(instructor);
     }
 }
