@@ -2,14 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_URL = 'http://192.168.101.6:9000'                  // URL de SonarQube
-        NEXUS_URL = 'http://192.168.101.6:8081'                       // URL de Nexus
-        SONARQUBE_CREDENTIALS_USR = credentials('sonarqube-credentials').username  // SonarQube Username
-        SONARQUBE_CREDENTIALS_PSW = credentials('sonarqube-credentials').password  // SonarQube Password
-        NEXUS_CREDENTIALS_USR = credentials('nexus-credentials').username  // Nexus Username
-        NEXUS_CREDENTIALS_PSW = credentials('nexus-credentials').password  // Nexus Password
-        GMAIL_CREDENTIALS_USR = credentials('gmailcredential').username  // Gmail Username
-        GMAIL_CREDENTIALS_PSW = credentials('gmailcredential').password  // Gmail Password
+        SONARQUBE_URL = 'http://192.168.101.6:9000'  // URL de SonarQube
+        NEXUS_URL = 'http://192.168.101.6:8081'      // URL de Nexus
     }
 
     stages {
@@ -18,7 +12,7 @@ pipeline {
                 echo 'Pulling the repository from GitHub...'
                 git(
                     branch: 'aminekbaier_5ARCTIC5_G3',
-                    url: 'https://github.com/eya118/5arctic5-G3-timesheet-devops.git'
+                    url: 'https://github.com/Molka-Kbaier/5arctic5-G3-StationSki.git'
                 )
                 echo 'Latest commit information:'
                 sh 'git log -1'
@@ -63,48 +57,48 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                echo 'Starting SonarQube analysis...'
-                sh """
-                   mvn sonar:sonar \
-                   -Dsonar.host.url=${SONARQUBE_URL} \
-                   -Dsonar.login=${SONARQUBE_CREDENTIALS_USR} \
-                   -Dsonar.password=${SONARQUBE_CREDENTIALS_PSW} \
-                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                """
-                echo 'SonarQube analysis completed!'
+                withCredentials([usernamePassword(credentialsId: 'sonarqube-credentials', usernameVariable: 'SONARQUBE_CREDENTIALS_USR', passwordVariable: 'SONARQUBE_CREDENTIALS_PSW')]) {
+                    echo 'Starting SonarQube analysis...'
+                    sh """
+                       mvn sonar:sonar \
+                       -Dsonar.host.url=${SONARQUBE_URL} \
+                       -Dsonar.login=${SONARQUBE_CREDENTIALS_USR} \
+                       -Dsonar.password=${SONARQUBE_CREDENTIALS_PSW} \
+                       -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    """
+                    echo 'SonarQube analysis completed!'
+                }
             }
         }
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                echo 'Deploying artifacts to Nexus...'
-                sh """
-                   mvn deploy -DskipTests \
-                   -Dnexus.username=${NEXUS_CREDENTIALS_USR} \
-                   -Dnexus.password=${NEXUS_CREDENTIALS_PSW}
-                """
-                echo 'Artifacts deployed to Nexus successfully!'
+                withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_CREDENTIALS_USR', passwordVariable: 'NEXUS_CREDENTIALS_PSW')]) {
+                    echo 'Deploying artifacts to Nexus...'
+                    sh """
+                       mvn deploy -DskipTests \
+                       -Dnexus.username=${NEXUS_CREDENTIALS_USR} \
+                       -Dnexus.password=${NEXUS_CREDENTIALS_PSW}
+                    """
+                    echo 'Artifacts deployed to Nexus successfully!'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
-                sh "docker build -t aminekbaier/station-ski:1.0.0 ."
+                sh "docker build -t aminekbaier/gestionstation-ski:1.0.0 ."
                 echo "Docker image built successfully!"
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                echo "Pushing Docker image to Docker Hub..."
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Pushing Docker image to Docker Hub..."
                     sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'docker push aminekbaier/station-ski:1.0.0'
+                    sh 'docker push aminekbaier/gestionstation-ski:1.0.0'
                 }
                 echo "Docker image pushed successfully!"
             }
@@ -121,47 +115,70 @@ pipeline {
 
         stage('Send Email Notification') {
             steps {
-                emailext(
-                    to: 'amine.kbaier@esprit.tn',
-                    subject: "Pipeline Report - Kaddem University",
-                    body: '''\
-                        Hello,
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gmailcredential', usernameVariable: 'GMAIL_CREDENTIALS_USR', passwordVariable: 'GMAIL_CREDENTIALS_PSW')]) {
+                        emailext(
+                            to: 'amine.kbaier@esprit.tn',
+                            subject: "Pipeline Report - Station University",
+                            body: '''\
+                                Bonjour Amine,
 
-                        Here is the pipeline report:
+                                Voici le rapport du pipeline:
 
-                        - **Git Pull**: Successful
-                        - **Maven Build**: Successful
-                        - **Unit Tests**: Successful
-                        - **SonarQube Analysis**: Successful
-                        - **Nexus Deployment**: Successful
-                        - **Backend Build**: Successful
-                        - **Docker Deployment**: Successful
+                                - **Git Pull** : Réussi
+                                - **Build Maven** : Réussi
+                                - **Tests Unitaires** : Réussi
+                                - **Analyse SonarQube** : Réussi
+                                - **Déploiement Nexus** : Réussi
+                                - **Build Backend** : Réussi
+                                - **Déploiement Docker** : Réussi
 
-                        **Summary**: The pipeline completed successfully.
+                                **Résumé** : Le pipeline s'est terminé avec succès.
 
-                        Regards,
-                        DevOps Team
-                        ''',
-                    from: "${GMAIL_CREDENTIALS_USR}",
-                    replyTo: "${GMAIL_CREDENTIALS_USR}",
-                    mimeType: 'text/plain'
-                )
+                                Cordialement,
+                                Équipe DevOps
+                                ''',
+                            from: "${GMAIL_CREDENTIALS_USR}",
+                            replyTo: "${GMAIL_CREDENTIALS_USR}",
+                            mimeType: 'text/plain'
+                        )
+                    }
+                }
             }
         }
     }
 
     post {
-        always {
-            echo "Cleaning up Docker resources..."
-            sh "docker system prune -f || true"
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
         failure {
-            mail to: 'team@example.com',
-                 subject: "Erreur dans le pipeline : ${currentBuild.fullDisplayName}",
-                 body: "Le pipeline a échoué à l'étape: ${currentBuild.currentResult}."
+            script {
+                withCredentials([usernamePassword(credentialsId: 'gmailcredential', usernameVariable: 'GMAIL_CREDENTIALS_USR', passwordVariable: 'GMAIL_CREDENTIALS_PSW')]) {
+                    emailext(
+                        to: 'amine.kbaier@esprit.tn',
+                        subject: "Échec du Pipeline - Station University",
+                        body: """\
+                            Bonjour Amine,
+
+                            Malheureusement, le pipeline **Station University** a rencontré un problème.
+
+                            - **Étape en Échec** : ${env.STAGE_NAME}
+                            - **Erreur** : Le pipeline a échoué à l'étape ${env.STAGE_NAME}. Veuillez consulter les logs Jenkins pour plus de détails sur la nature de l'erreur.
+
+                            **Résumé** : Le pipeline n'a pas pu se terminer avec succès. Nous vous recommandons de vérifier immédiatement les détails dans la console Jenkins pour corriger l'erreur.
+
+                            **Conseils** :
+                            - Vérifiez les fichiers de configuration liés à cette étape.
+                            - Assurez-vous que tous les services nécessaires sont opérationnels.
+                            - Consultez l'historique des builds pour des erreurs similaires.
+
+                            Cordialement,
+                            Équipe DevOps
+                            """,
+                        from: "${GMAIL_CREDENTIALS_USR}",
+                        replyTo: "${GMAIL_CREDENTIALS_USR}",
+                        mimeType: 'text/plain'
+                    )
+                }
+            }
         }
     }
 }
