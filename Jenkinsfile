@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'http://192.168.101.4:9000'
-        NEXUS_URL = 'http://192.168.101.4:8081'
-        NEXUS_CREDENTIALS = credentials('nexus-credentials')
+
     }
 
     stages {
