@@ -46,28 +46,21 @@ pipeline {
 
         stage("Building Image") {
             steps {
-                // Build de l'image Docker sans encore tagger
+                // Ajout d'un tag unique basé sur le numéro de build Jenkins
                 sh "docker build -t wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER} ."
-            }
-        }
-
-        stage("Tagging Image") {
-            steps {
-                // Création du tag supplémentaire pour l'image Docker
-                sh "docker tag wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER} wael975/waelbouaouina-g3-stationski:latest"
             }
         }
 
         stage("Pushing Image") {
             steps {
-                script {
-                    // Connexion à Docker Hub et push des images taggées
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        // Push de l'image avec son tag spécifique
-                        sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
-                        // Push de l'image avec le tag 'latest'
-                        sh "docker push wael975/waelbouaouina-g3-stationski:latest"
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS')]) {
+                    echo "Docker User: $DOCKER_USER"
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
+                    """
                 }
             }
         }
