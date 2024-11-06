@@ -65,7 +65,7 @@ pipeline {
                 usernameVariable: 'DOCKER_USER',
                 passwordVariable: 'DOCKER_PASS')]) {
                     echo "Docker User: $DOCKER_USER"
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin https://index.docker.io/v1/"
                     // Pousser l'image vers Docker Hub
                     sh "docker push wael975/waelbouaouina-g3-stationski"
                 }
