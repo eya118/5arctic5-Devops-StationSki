@@ -54,9 +54,11 @@ pipeline {
         stage("Pushing Image") {
             steps {
                 // Utilisation de docker.withRegistry pour se connecter au registre Docker
-                docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                    echo "Docker login réussi, envoi de l'image..."
-                    sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        echo "Docker login réussi, envoi de l'image..."
+                        sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
+                    }
                 }
             }
         }
