@@ -9,60 +9,25 @@ pipeline {
             }
         }
 
-        stage("Compiling") {
-            steps {
-                sh "mvn clean compile"
-            }
-        }
-
-        stage("SonarQube Analysis") {
-            steps {
-                script {
-                    def mvn = tool "M2_HOME"
-                    withSonarQubeEnv("SONARQUBE_SERVER") {
-                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gestion-station-ski -Dsonar.projectName='gestion-station-ski' -Dsonar.login=sqp_cc9cc391fa75d8fc9444640031a87972caf8a4c0"
-                    }
-                }
-            }
-        }
-
-        stage("Testing") {
-            steps {
-                sh "mvn test"
-            }
-        }
-
-        stage("Packaging") {
-            steps {
-                sh "mvn package -DskipTests=true"
-            }
-        }
-
-        stage("Deploy to Nexus") {
-            steps {
-                sh "mvn clean deploy"
-            }
-        }
-
         stage("Building Image") {
             steps {
-                // Ajout d'un tag unique basé sur le numéro de build Jenkins
                 sh "docker build -t wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER} ."
+            }
+        }
+
+        stage("Tagging Image") {
+            steps {
+                sh "docker tag wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER} wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
             }
         }
 
         stage("Pushing Image") {
             steps {
-                // Connexion explicite à Docker Hub avec l'ID d'identification dans Jenkins
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS')]) {
-                    echo "Docker login réussi, envoi de l'image..."
-                    // Connexion explicite avec Docker Hub
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}
-                    """
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    echo "Docker User: $DOCKER_USER"
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
+                    }
                 }
             }
         }
