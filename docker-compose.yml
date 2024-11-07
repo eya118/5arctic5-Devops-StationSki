@@ -32,17 +32,14 @@ services:
       MYSQL_PASSWORD: springpassword
     volumes:
       - dbdata:/var/lib/mysql
-
+      
   mysql-exporter:
-    image: prom/mysqld-exporter
-    environment:
-      MYSQL_USER: root
-      MYSQL_PASSWORD: rootpassword
-      MYSQL_HOST: mysqldb
-    volumes:
-      - ./my.cnf:/root/.my.cnf:ro  # Mount the config file with MySQL credentials
-    ports:
-      - "9104:9104"
+  image: prom/mysqld-exporter
+  environment:
+    - DATA_SOURCE_NAME=root:rootpassword@tcp(mysqldb:3306)/
+  ports:
+    - "9104:9104"
+
 
 volumes:
   dbdata:
