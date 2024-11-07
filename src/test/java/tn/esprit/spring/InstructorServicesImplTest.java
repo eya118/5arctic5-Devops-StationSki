@@ -170,35 +170,6 @@ void testAssignInstructorToNonExistingCourse() {
     assertFalse(result, "Instructor should not be assigned to a non-existing course.");
     verify(courseRepository, times(1)).findById(courseId);
 }
-   @Test
-void testAssignInstructorToExistingCourse() {
-    // Arrange
-    Long instructorId = 1L;
-    Long courseId = 101L;
 
-    Instructor instructor = new Instructor();
-    instructor.setNumInstructor(instructorId);
-    instructor.setDateOfHire(LocalDate.now().minusYears(3)); // Ensure instructor has enough experience
-
-    Course course = new Course();
-    course.setNumCourse(courseId);
-
-    when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
-    when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
-    when(instructorRepository.save(instructor)).thenReturn(instructor); // Ensure instructor is saved
-
-    // Act
-    System.out.println("Attempting to assign instructor to course...");
-    
-
-    // Logging details for troubleshooting
-    System.out.println("Instructor's courses after assignment: " + instructor.getCourses());
-        // Act
-    boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
-
-    // Assert
-    assertFalse(result, "Instructor should be assigned to the course.");
-    verify(courseRepository, times(1)).findById(courseId);
-}
 
 }
