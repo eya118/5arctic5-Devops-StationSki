@@ -52,7 +52,6 @@ public class InstructorServicesImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         instructor = new Instructor(1L, "John", "Doe", LocalDate.now(), new HashSet<>());
-        course = new Course(1L,1, TypeCourse.COLLECTIVE_CHILDREN, null,10F, 1, Collections.emptySet());
     }
 
     @Test
