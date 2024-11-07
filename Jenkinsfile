@@ -78,10 +78,16 @@ pipeline {
             echo "========always========"
         }
         success {
-            echo "========pipeline executed successfully========"
+            echo "======== Pipeline Executed Successfully ========"
+            mail to: 'hmizitamim@hotmail.com',
+                 subject: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins build succeeded."
         }
         failure {
-            echo "========pipeline execution failed========"
+            echo "======== Pipeline Execution Failed ========"
+            mail to: 'hmizitamim@hotmail.com',
+                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins build failed. Please check the logs."
         }
     }
 }
