@@ -6,7 +6,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3030:3030"  # Maps port 80 in the container to port 3000 on the host
+      - "80:3030"  # Maps port 80 in the container to port 3000 on the host
 
   springbootapp:
     image: springbootapp:latest
