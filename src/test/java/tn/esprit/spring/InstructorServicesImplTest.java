@@ -24,6 +24,8 @@ import tn.esprit.spring.entities.TypeCourse;
 import tn.esprit.spring.repositories.ICourseRepository;
 import tn.esprit.spring.repositories.IInstructorRepository;
 import tn.esprit.spring.services.InstructorServicesImpl;
+import tn.esprit.spring.services.ICourseServices;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
