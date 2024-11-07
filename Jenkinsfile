@@ -75,7 +75,7 @@ pipeline {
                 script {
                     sleep 10  
 
-                    sh 'curl -f http://localhost:8089'  
+                    sh 'wget -qO- http://localhost:8089'  
                 }
             }
         }
