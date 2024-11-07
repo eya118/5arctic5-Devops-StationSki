@@ -86,7 +86,7 @@ pipeline {
             // Notification de succès
             emailext subject: "Pipeline Succès : ${currentBuild.fullDisplayName}",
                      body: "Le pipeline s'est terminé avec succès. Voir les détails ici : ${env.BUILD_URL}",
-                     to: 'bouaouinawael1@gmail.com
+                     to: 'bouaouinawael1@gmail.com'
 '
         }
         failure {
@@ -94,8 +94,8 @@ pipeline {
             // Notification d'échec
             emailext subject: "Pipeline Échec : ${currentBuild.fullDisplayName}",
                      body: "Le pipeline a échoué. Voir les détails ici : ${env.BUILD_URL}",
-                     to: 'bouaouinawael1@gmail.com
-'
+                     to: 'bouaouinawael1@gmail.com'
+
         }
     }
 }
