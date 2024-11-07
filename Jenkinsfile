@@ -71,12 +71,12 @@ pipeline {
         }
 
 
-        stage("Stopping Docker Compose") {
-            steps {
-                sh "docker-compose -f docker-compose.yml down"
-            }
-        }
-    }
+//        stage("Stopping Docker Compose") {
+//           steps {
+//               sh "docker-compose -f docker-compose.yml down"
+//            }
+//        }
+//    }
 
     post {
         success {
