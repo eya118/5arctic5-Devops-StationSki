@@ -54,8 +54,7 @@ public class InstructorServicesImplTest {
     @Mock
     private ICourseRepository courseRepository ;
 
-        @InjectMocks
-    private ICourseServices courseService;
+
     
     @BeforeEach
     public void setUp() {
