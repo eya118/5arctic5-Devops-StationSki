@@ -64,38 +64,19 @@ pipeline {
             steps {
                 script {
                     sh "docker-compose -v" 
+
                     sh "docker-compose -f docker-compose.yml up -d"
                 }
             }
         }
-
-        stage("Stopping Docker Compose") {
-            steps {
-               sh "docker-compose -f docker-compose.yml down"
-            }
-        }
-    }
+    
 
     post {
-        always {
-            // Sauvegarder les logs
-            archiveArtifacts artifacts: '**/target/*.log', allowEmptyArchive: true
-        }
         success {
             echo "Pipeline terminé avec succès !"
-            // Notification de succès
-            emailext subject: "Pipeline Succès : ${currentBuild.fullDisplayName}",
-                     body: "Le pipeline s'est terminé avec succès. Voir les détails ici : ${env.BUILD_URL}",
-                     to: 'bouaouinawael1@gmail.com'
-
         }
         failure {
             echo "Le pipeline a échoué."
-            // Notification d'échec
-            emailext subject: "Pipeline Échec : ${currentBuild.fullDisplayName}",
-                     body: "Le pipeline a échoué. Voir les détails ici : ${env.BUILD_URL}",
-                     to: 'bouaouinawael1@gmail.com'
-
         }
     }
 }
