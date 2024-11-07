@@ -1,2 +1,109 @@
-x
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Management</title>
+</head>
+<body>
+    <h1>Instructor Management</h1>
+
+    <!-- Add Instructor Form -->
+    <h3>Add Instructor</h3>
+    <form id="addInstructorForm">
+        <input type="text" id="firstName" placeholder="First Name" required />
+        <input type="text" id="lastName" placeholder="Last Name" required />
+        <input type="date" id="dateOfHire" required />
+        <button type="submit">Add Instructor</button>
+    </form>
+
+    <!-- Update Instructor Form -->
+    <h3>Update Instructor</h3>
+    <form id="updateInstructorForm">
+        <input type="number" id="updateInstructorId" placeholder="Instructor ID" required />
+        <input type="text" id="updateFirstName" placeholder="First Name" />
+        <input type="text" id="updateLastName" placeholder="Last Name" />
+        <input type="date" id="updateDateOfHire" />
+        <button type="submit">Update Instructor</button>
+    </form>
+
+    <!-- List All Instructors -->
+    <h3>All Instructors</h3>
+    <button id="getAllInstructors">Get All Instructors</button>
+    <ul id="instructorList"></ul>
+
+    <script>
+        // Base URL for the Spring Boot backend
+        const apiUrl = 'http://192.168.33.10:8080/instructor';
+
+        // Add Instructor
+        document.getElementById('addInstructorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const instructor = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                dateOfHire: document.getElementById('dateOfHire').value,
+                courses: [] // You can modify this if courses are required
+            };
+
+            const response = await fetch(`${apiUrl}/instructor/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(instructor)
+            });
+
+            const result = await response.json();
+            alert(`Instructor added: ${result.firstName} ${result.lastName}`);
+            getAllInstructors();  // Refresh the list
+        });
+
+        // Update Instructor
+        document.getElementById('updateInstructorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const instructorId = document.getElementById('updateInstructorId').value;
+            const instructor = {
+                numInstructor: instructorId,
+                firstName: document.getElementById('updateFirstName').value,
+                lastName: document.getElementById('updateLastName').value,
+                dateOfHire: document.getElementById('updateDateOfHire').value,
+                courses: [] // You can modify this if courses are required
+            };
+
+            const response = await fetch(`${apiUrl}/instructor/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(instructor)
+            });
+
+            const result = await response.json();
+            alert(`Instructor updated: ${result.firstName} ${result.lastName}`);
+            getAllInstructors();  // Refresh the list
+        });
+
+        // Get All Instructors
+        document.getElementById('getAllInstructors').addEventListener('click', getAllInstructors);
+
+        async function getAllInstructors() {
+            const response = await fetch(`${apiUrl}/instructor/all`);
+            const instructors = await response.json();
+
+            const instructorList = document.getElementById('instructorList');
+            instructorList.innerHTML = ''; // Clear the list before updating
+
+            instructors.forEach(instructor => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${instructor.firstName} ${instructor.lastName} (Hired: ${instructor.dateOfHire})`;
+                instructorList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>
+
 
