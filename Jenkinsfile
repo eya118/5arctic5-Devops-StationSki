@@ -54,7 +54,7 @@ pipeline {
             steps {
                 echo "======== Pushing Docker Image to Docker Hub ========"
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
-                    sh 'echo $DOCKER_TOKEN | docker login -u wael975 --password-stdin' 
+                    sh 'echo $DOCKER_TOKEN | docker login -u wael975 --password-stdin'
                     sh "docker push wael975/waelbouaouina-g3-stationski:${env.BUILD_NUMBER}"
                 }
             }
@@ -63,13 +63,12 @@ pipeline {
         stage("Running Docker Compose") {
             steps {
                 script {
-                    sh "docker-compose -v" 
-
+                    sh "docker-compose -v"
                     sh "docker-compose -f docker-compose.yml up -d"
                 }
             }
         }
-    
+    }
 
     post {
         success {
