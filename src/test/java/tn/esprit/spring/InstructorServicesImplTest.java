@@ -122,27 +122,28 @@ public class InstructorServicesImplTest {
     }
 
 
+@Test
+void testAssignInstructorToCourse_InsufficientExperience() {
+    // Arrange
+    Long instructorId = 1L;
+    Long courseId = 101L;
 
-    @Test
-    void testAssignInstructorToCourse() {
-        // Arrange
-        Long courseId = 1L;
-        Long instructorId = 2L;
-        Course course = new Course();
-        course.setNumCourse(courseId);
-        Instructor instructor = new Instructor();
-        instructor.setNumInstructor(instructorId);
+    Instructor instructor = new Instructor();
+    instructor.setNumInstructor(instructorId);
+    instructor.setDateOfHire(LocalDate.now().minusYears(1)); // 1 year of experience
+    Course course = new Course();
+    course.setNumCourse(courseId);
 
-        // Simulate repository behavior
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
-        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
-        when(courseRepository.save(any(Course.class))).thenReturn(course);
+    when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+    when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
 
-        // Act
-        boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
+    // Act
+    boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
 
-        // Assert
-        assertTrue(result);
-        verify(courseRepository, times(1)).save(any(Course.class)); // Ensure save is called once
-    }
+    // Assert
+    assertFalse(result, "Instructor should not be assigned to the course due to insufficient experience.");
+    verify(instructorRepository, times(0)).save(any(Instructor.class));
+    verify(courseRepository, times(0)).save(any(Course.class));
+}
+
 }
