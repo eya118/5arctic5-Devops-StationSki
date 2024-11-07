@@ -32,6 +32,15 @@ services:
       MYSQL_PASSWORD: springpassword
     volumes:
       - dbdata:/var/lib/mysql
+      
+  mysql-exporter:
+    image: prom/mysqld-exporter
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=rootpassword
+      - MYSQL_HOST=mysqldb
+    expose:
+      - "9104"
 
 volumes:
   dbdata:
