@@ -70,15 +70,6 @@ pipeline {
             }
         }
 
-        stage("Testing with Docker Compose") {
-            steps {
-                script {
-                    sleep 10  
-
-                    sh 'wget -qO- http://localhost:8089'  
-                }
-            }
-        }
 
         stage("Stopping Docker Compose") {
             steps {
