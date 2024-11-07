@@ -49,6 +49,9 @@ public class InstructorServicesImplTest {
     @Mock
     private IInstructorRepository instructorRepository;
 
+    @Mock
+    private ICourseRepository courseRepository ;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -118,6 +121,8 @@ public class InstructorServicesImplTest {
         logger.info("Successfully verified update of instructor");
     }
 
+
+
     @Test
     void testAssignInstructorToCourse() {
         // Arrange
@@ -139,4 +144,5 @@ public class InstructorServicesImplTest {
         // Assert
         assertTrue(result);
         verify(courseRepository, times(1)).save(any(Course.class)); // Ensure save is called once
-    }}
+    }
+}
