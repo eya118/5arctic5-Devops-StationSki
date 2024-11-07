@@ -60,11 +60,11 @@ public class InstructorServicesImplTest {
         // Arrange
         List<Instructor> instructors = new ArrayList<>();
         Instructor instructor1 = new Instructor();
-        instructor1.setId(1L);
+        instructor1.setNumInstructor(1L);
         instructors.add(instructor1);
 
         Instructor instructor2 = new Instructor();
-        instructor2.setId(2L);
+        instructor2.setNumInstructor(2L);
         instructors.add(instructor2);
 
         when(instructorRepository.findAll()).thenReturn(instructors);
@@ -84,7 +84,7 @@ public class InstructorServicesImplTest {
     void testAddInstructor() {
         // Arrange
         Instructor instructor = new Instructor();
-        instructor.setId(1L);
+        instructor.setNumInstructor(1L);
         when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
 
         // Act
@@ -94,7 +94,7 @@ public class InstructorServicesImplTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getNumInstructor());
         verify(instructorRepository, times(1)).save(instructor);
         logger.info("Successfully verified addition of instructor");
     }
@@ -103,7 +103,7 @@ public class InstructorServicesImplTest {
     void testUpdateInstructor() {
         // Arrange
         Instructor instructor = new Instructor();
-        instructor.setId(1L);
+        instructor.setNumInstructor(1L);
         when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
 
         // Act
@@ -113,7 +113,7 @@ public class InstructorServicesImplTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getNumInstructor());
         verify(instructorRepository, times(1)).save(instructor);
         logger.info("Successfully verified update of instructor");
     }
@@ -123,7 +123,7 @@ public class InstructorServicesImplTest {
         // Arrange
         Long instructorId = 1L;
         Instructor instructor = new Instructor();
-        instructor.setId(instructorId);
+        instructor.setNumInstructor(instructorId);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
 
         // Act
@@ -133,7 +133,7 @@ public class InstructorServicesImplTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(instructorId, result.getId());
+        assertEquals(instructorId, result.getNumInstructor());
         verify(instructorRepository, times(1)).findById(instructorId);
         logger.info("Successfully verified retrieval of instructor found");
     }
