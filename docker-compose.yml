@@ -6,7 +6,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:3030"  # Maps port 80 in the container to port 3000 on the host
+      - "80:80"  # Maps port 80 in the container to port 3000 on the host
 
   springbootapp:
     image: springbootapp:latest
@@ -26,7 +26,7 @@ services:
       SERVER_PORT: 8089
       SPRING_MVC_FORMAT_DATE: yyyy-MM-dd
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
-      CORS_ALLOWED_ORIGINS: http://192.168.33.10:3000  # Allow frontend origin
+      CORS_ALLOWED_ORIGINS: http://192.168.33.10:80  # Allow frontend origin
       
 
   mysqldb:
