@@ -63,10 +63,8 @@ pipeline {
         stage("Running Docker Compose") {
             steps {
                 script {
-                    // Vérifiez si Docker Compose est installé, sinon, installez-le ici.
-                    sh "docker-compose -v" // Affiche la version de Docker Compose
+                    sh "docker-compose -v" 
 
-                    // Lancer les services de Docker Compose
                     sh "docker-compose -f docker-compose.yml up -d"
                 }
             }
@@ -75,19 +73,15 @@ pipeline {
         stage("Testing with Docker Compose") {
             steps {
                 script {
-                    // Attendez que l'application Spring soit prête (un peu de délai si nécessaire)
-                    sleep 10  // Attendez 10 secondes pour laisser les services démarrer
+                    sleep 10  
 
-                    // Vous pouvez exécuter des tests sur votre application Spring ici
-                    // Par exemple, utiliser curl pour vérifier que l'application fonctionne
-                    sh 'curl -f http://localhost:8089/api/health'  // Changez l'URL selon votre endpoint de santé
+                    sh 'curl -f http://localhost:8089'  
                 }
             }
         }
 
         stage("Stopping Docker Compose") {
             steps {
-                // Arrêtez les services de Docker Compose
                 sh "docker-compose -f docker-compose.yml down"
             }
         }
