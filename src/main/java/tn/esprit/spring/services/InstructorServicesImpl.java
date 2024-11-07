@@ -105,5 +105,31 @@ public class InstructorServicesImpl implements IInstructorServices{
         }
         return false;  // No conflicts found
     }
+    public boolean assignInstructorToCourse(Long instructorId, Long courseId) {
+        Instructor instructor = instructorRepository.findById(instructorId).orElse(null);
+        Course course = courseRepository.findById(courseId).orElse(null);
 
+        if (instructor == null || course == null) {
+            return false; // Instructor or Course not found
+        }
+
+        // Calculate the instructor's years of experience based on the date of hire
+        LocalDate hireDate = instructor.getDateOfHire();
+        if (hireDate == null) {
+            return false; // If the hire date is null, return false
+        }
+
+        int yearsOfExperience = Period.between(hireDate, LocalDate.now()).getYears();
+
+        // Business logic: Check if the instructor has at least 2 years of experience
+        if (yearsOfExperience < 2) {
+            return false; // Instructor has less than 2 years of experience
+        }
+
+        instructor.getCourses().add(course); // Assuming there's a 'courses' list in Instructor
+
+        // Save the updated instructor object (which will also update the relationship)
+        instructorRepository.save(instructor);
+        return true;
+    }
 }
