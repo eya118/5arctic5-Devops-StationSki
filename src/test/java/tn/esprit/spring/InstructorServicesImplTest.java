@@ -119,38 +119,24 @@ public class InstructorServicesImplTest {
     }
 
     @Test
-    void testRetrieveInstructorFound() {
+    void testAssignInstructorToCourse() {
         // Arrange
-        Long instructorId = 1L;
+        Long courseId = 1L;
+        Long instructorId = 2L;
+        Course course = new Course();
+        course.setNumCourse(courseId);
         Instructor instructor = new Instructor();
         instructor.setNumInstructor(instructorId);
+
+        // Simulate repository behavior
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+        when(courseRepository.save(any(Course.class))).thenReturn(course);
 
         // Act
-        Instructor result = instructorService.retrieveInstructor(instructorId);
-
-        logger.info("Retrieved instructor: {}", result);
+        boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(instructorId, result.getNumInstructor());
-        verify(instructorRepository, times(1)).findById(instructorId);
-        logger.info("Successfully verified retrieval of instructor found");
-    }
-
-    @Test
-    void testRetrieveInstructorNotFound() {
-        // Arrange
-        Long instructorId = 1L;
-        when(instructorRepository.findById(instructorId)).thenReturn(Optional.empty());
-
-        // Act
-        Instructor result = instructorService.retrieveInstructor(instructorId);
-
-        logger.info("Attempted to retrieve instructor with ID: {} - Result: {}", instructorId, result);
-
-        // Assert
-        assertNull(result);
-        verify(instructorRepository, times(1)).findById(instructorId);
-        logger.info("Successfully verified retrieval of instructor not found");
+        assertTrue(result);
+        verify(courseRepository, times(1)).save(any(Course.class)); // Ensure save is called once
     }}
