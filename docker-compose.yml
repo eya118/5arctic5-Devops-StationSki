@@ -36,11 +36,13 @@ services:
   mysql-exporter:
     image: prom/mysqld-exporter
     environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=rootpassword
-      - MYSQL_HOST=mysqldb
-    expose:
-      - "9104"
-
+       MYSQL_USER:root
+       MYSQL_PASSWORD:rootpassword
+       MYSQL_HOST:mysqldb
+    volumes:
+      - ./my.cnf:/root/.my.cnf:ro  # Mount the config file
+    ports:
+      - "9104:9104"
+      
 volumes:
   dbdata:
