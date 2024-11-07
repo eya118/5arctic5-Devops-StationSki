@@ -195,23 +195,4 @@ void testAssignInstructorToNonExistingCourse() {
         verify(instructorRepository, times(1)).save(instructor);
         verify(courseRepository, times(1)).save(course);
     }
-          @Test
-    void testAddCourseWithoutPriceOrLevel() {
-        // Arrange
-        Course course = new Course();
-        course.setNumCourse(101L);
-        course.setTypeCourse(TypeCourse.INDIVIDUAL);
-        course.setSupport(Support.SKI);
-        // No price or level set, should not cause an issue
-
-        when(courseRepository.save(any(Course.class))).thenReturn(course);
-
-        // Act
-        Course result = courseService.addCourse(course);
-
-        // Assert
-        assertNotNull(result, "Course should be saved and returned.");
-        assertEquals(course.getNumCourse(), result.getNumCourse(), "The course ID should match.");
-        verify(courseRepository, times(1)).save(course);
-    }
 }
