@@ -12,14 +12,9 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -30,34 +25,132 @@ import tn.esprit.spring.repositories.ICourseRepository;
 import tn.esprit.spring.repositories.IInstructorRepository;
 import tn.esprit.spring.services.InstructorServicesImpl;
 
-@SpringBootTest  // Load the Spring context with MySQL
-@TestMethodOrder(OrderAnnotation.class)  // Define the order of tests
-@Transactional  // Each test is isolated in a transaction
-@Rollback(true)  // Changes are rolled back after each test
-public class InstructorServicesImplTest {
-    @Autowired
-    private InstructorServicesImpl instructorServices;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-    @Autowired
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+
+
+
+public class InstructorServicesImplTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(InstructorServicesImplTest.class);
+
+    @InjectMocks
+    private InstructorServicesImpl instructorService;
+
+    @Mock
     private IInstructorRepository instructorRepository;
 
-    @Autowired
-    private ICourseRepository courseRepository;
-
-
-    private Instructor instructor;
-    private Course course;
-
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-        instructor = new Instructor(1L, "John", "Doe", LocalDate.now(), new HashSet<>());
+        logger.info("Setting up test for InstructorServiceImpl");
+    }
+
+    @Test
+    void testRetrieveAllInstructors() {
+        // Arrange
+        List<Instructor> instructors = new ArrayList<>();
+        Instructor instructor1 = new Instructor();
+        instructor1.setId(1L);
+        instructors.add(instructor1);
+
+        Instructor instructor2 = new Instructor();
+        instructor2.setId(2L);
+        instructors.add(instructor2);
+
+        when(instructorRepository.findAll()).thenReturn(instructors);
+
+        // Act
+        List<Instructor> result = instructorService.retrieveAllInstructors();
+
+        logger.info("Retrieved all instructors: {}", result);
+
+        // Assert
+        assertEquals(2, result.size());
+        verify(instructorRepository, times(1)).findAll();
+        logger.info("Successfully verified retrieval of all instructors");
     }
 
     @Test
     void testAddInstructor() {
+        // Arrange
+        Instructor instructor = new Instructor();
+        instructor.setId(1L);
         when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
-        Instructor savedInstructor = instructorServices.addInstructor(instructor);
-        assertEquals(instructor, savedInstructor);
+
+        // Act
+        Instructor result = instructorService.addInstructor(instructor);
+
+        logger.info("Added instructor: {}", result);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
         verify(instructorRepository, times(1)).save(instructor);
+        logger.info("Successfully verified addition of instructor");
+    }
+
+    @Test
+    void testUpdateInstructor() {
+        // Arrange
+        Instructor instructor = new Instructor();
+        instructor.setId(1L);
+        when(instructorRepository.save(any(Instructor.class))).thenReturn(instructor);
+
+        // Act
+        Instructor result = instructorService.updateInstructor(instructor);
+
+        logger.info("Updated instructor: {}", result);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(instructorRepository, times(1)).save(instructor);
+        logger.info("Successfully verified update of instructor");
+    }
+
+    @Test
+    void testRetrieveInstructorFound() {
+        // Arrange
+        Long instructorId = 1L;
+        Instructor instructor = new Instructor();
+        instructor.setId(instructorId);
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+
+        // Act
+        Instructor result = instructorService.retrieveInstructor(instructorId);
+
+        logger.info("Retrieved instructor: {}", result);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(instructorId, result.getId());
+        verify(instructorRepository, times(1)).findById(instructorId);
+        logger.info("Successfully verified retrieval of instructor found");
+    }
+
+    @Test
+    void testRetrieveInstructorNotFound() {
+        // Arrange
+        Long instructorId = 1L;
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.empty());
+
+        // Act
+        Instructor result = instructorService.retrieveInstructor(instructorId);
+
+        logger.info("Attempted to retrieve instructor with ID: {} - Result: {}", instructorId, result);
+
+        // Assert
+        assertNull(result);
+        verify(instructorRepository, times(1)).findById(instructorId);
+        logger.info("Successfully verified retrieval of instructor not found");
     }}
