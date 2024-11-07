@@ -87,7 +87,7 @@ pipeline {
             emailext subject: "Pipeline Succès : ${currentBuild.fullDisplayName}",
                      body: "Le pipeline s'est terminé avec succès. Voir les détails ici : ${env.BUILD_URL}",
                      to: 'bouaouinawael1@gmail.com'
-'
+
         }
         failure {
             echo "Le pipeline a échoué."
