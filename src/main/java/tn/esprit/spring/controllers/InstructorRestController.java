@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/instructor")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://192.168.33.10")
 public class InstructorRestController {
 
     private final IInstructorServices instructorServices;
