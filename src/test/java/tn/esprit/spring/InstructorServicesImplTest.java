@@ -52,6 +52,9 @@ public class InstructorServicesImplTest {
     @Mock
     private ICourseRepository courseRepository ;
 
+        @InjectMocks
+    private ICourseServices courseService;
+    
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -145,5 +148,68 @@ void testAssignInstructorToCourse_InsufficientExperience() {
     verify(instructorRepository, times(0)).save(any(Instructor.class));
     verify(courseRepository, times(0)).save(any(Course.class));
 }
+@Test
+void testAssignInstructorToNonExistingCourse() {
+    // Arrange
+    Long instructorId = 1L;
+    Long courseId = 999L; // Non-existing course
 
+    Instructor instructor = new Instructor();
+    instructor.setNumInstructor(instructorId);
+    Course course = new Course();
+    course.setNumCourse(courseId);
+
+    when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+    when(courseRepository.findById(courseId)).thenReturn(Optional.empty()); // Course not found
+
+    // Act
+    boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
+
+    // Assert
+    assertFalse(result, "Instructor should not be assigned to a non-existing course.");
+    verify(courseRepository, times(1)).findById(courseId);
+}
+
+        @Test
+    void testAssignInstructorToExistingCourse() {
+        // Arrange
+        Long instructorId = 1L;
+        Long courseId = 101L;
+
+        Instructor instructor = new Instructor();
+        instructor.setNumInstructor(instructorId);
+        Course course = new Course();
+        course.setNumCourse(courseId);
+
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
+
+        // Act
+        boolean result = instructorService.assignInstructorToCourse(instructorId, courseId);
+
+        // Assert
+        assertTrue(result, "Instructor should be assigned to the course.");
+        assertTrue(instructor.getCourses().contains(course), "Instructor's courses list should contain the assigned course.");
+        verify(instructorRepository, times(1)).save(instructor);
+        verify(courseRepository, times(1)).save(course);
+    }
+          @Test
+    void testAddCourseWithoutPriceOrLevel() {
+        // Arrange
+        Course course = new Course();
+        course.setNumCourse(101L);
+        course.setTypeCourse(TypeCourse.INDIVIDUAL);
+        course.setSupport(Support.SKI);
+        // No price or level set, should not cause an issue
+
+        when(courseRepository.save(any(Course.class))).thenReturn(course);
+
+        // Act
+        Course result = courseService.addCourse(course);
+
+        // Assert
+        assertNotNull(result, "Course should be saved and returned.");
+        assertEquals(course.getNumCourse(), result.getNumCourse(), "The course ID should match.");
+        verify(courseRepository, times(1)).save(course);
+    }
 }
