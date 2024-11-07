@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Maps port 80 in the container to port 3000 on the host
+
   springbootapp:
     image: springbootapp:latest
     build:
@@ -19,6 +26,8 @@ services:
       SERVER_PORT: 8089
       SPRING_MVC_FORMAT_DATE: yyyy-MM-dd
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
+      CORS_ALLOWED_ORIGINS: http://192.168.33.10:3000  # Allow frontend origin
+      
 
   mysqldb:
     image: mysql:8.0
@@ -36,9 +45,9 @@ services:
   mysql-exporter:
     image: prom/mysqld-exporter  # Ensure 'image' is a string here too
     environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=rootpassword
-      - MYSQL_HOST=mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rootpassword
+      MYSQL_HOST: mysqldb
     volumes:
       - ./my.cnf:/root/.my.cnf:ro  # Mount the config file
     ports:
