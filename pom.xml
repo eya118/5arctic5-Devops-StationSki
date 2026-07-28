@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.9</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>tn.esprit.spring</groupId>
 	<artifactId>gestion-station-ski</artifactId>
@@ -15,12 +15,13 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
-		<!-- ADD THESE TWO LINES TO FIX THE JDK 21+ COMPILATION ERROR -->
+		<!-- Override versions for JDK 21+ compatibility -->
 		<lombok.version>1.18.32</lombok.version>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-		<!-- Configuration SonarQube -->
+
+		<!-- Configuration SonarQube (Fixed URL syntax) -->
 		<sonar.projectKey>Stationski-FILALIEYA-G3-5ARCTIC5</sonar.projectKey>
-		<sonar.host.url>http://192.168.33.10/:9000</sonar.host.url>
+		<sonar.host.url>http://192.168.33.10:9000</sonar.host.url>
 		<sonar.java.binaries>target/classes</sonar.java.binaries>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
@@ -55,21 +56,13 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.6.12</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 
-
-
-
-		<!-- added depensencies -->
-          		<!--mokito-->
+		<!-- Mockito dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>5.3.1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -77,23 +70,12 @@
 			<version>5.3.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy-agent</artifactId>
-		</dependency>
-          		<!--mokito-->
 
-          		<!--JUnit 5 API and Engine for Testing:xml-->
-
+		<!-- JUnit 5 API and Engine for Testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-
 			<exclusions>
 				<exclusion>
 					<groupId>junit</groupId>
@@ -114,11 +96,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-		<!--JUnit 5 API and Engine for Testing:xml-->
-
-
-
 		<!-- log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -126,13 +103,11 @@
 			<version>1.2.17</version>
 		</dependency>
 
-		<!-- endlog4j -->
-		<!-- prometheus -->
+		<!-- Prometheus / Micrometer -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
@@ -143,13 +118,8 @@
 			<artifactId>micrometer-registry-prometheus-simpleclient</artifactId>
 			<version>1.13.4</version>
 		</dependency>
-
-		<!-- prometheus -->
-
-
-
-		<!-- added depensencies -->
 	</dependencies>
+
 	<distributionManagement>
 		<repository>
 			<id>deploymentRepo</id>
@@ -172,11 +142,11 @@
 				</configuration>
 			</plugin>
 
-			<!-- added plugins jacococ -->
+			<!-- JaCoCo plugin configured for JDK 21+ -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.12</version> <!-- Utilisez la version souhaitée -->
+				<version>0.8.12</version>
 				<executions>
 					<execution>
 						<goals>
@@ -192,8 +162,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--  end added plugins jacococ -->
 		</plugins>
 	</build>
-
 </project>
