@@ -80,12 +80,10 @@
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
-			<version>1.12.22</version>
 		</dependency>
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy-agent</artifactId>
-			<version>1.12.22</version>
 		</dependency>
           		<!--mokito-->
 
@@ -178,7 +176,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version> <!-- Utilisez la version souhaitée -->
+				<version>0.8.12</version> <!-- Utilisez la version souhaitée -->
 				<executions>
 					<execution>
 						<goals>
