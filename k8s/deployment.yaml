@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: station-ski-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: station-ski
+
+  template:
+    metadata:
+      labels:
+        app: station-ski
+
+    spec:
+      containers:
+        - name: station-ski
+          image: eya118/station-ski:v1
+
+          ports:
+            - containerPort: 8089
